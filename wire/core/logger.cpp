@@ -11,16 +11,8 @@ std::shared_ptr<spdlog::logger> logger() {
   return ptr;
 }
 
-int set_loglevel(char level) {
-  if (level == 'i')
-    spdlog::set_level(spdlog::level::info);
-  else if (level == 'w')
-    spdlog::set_level(spdlog::level::warn);
-  else if (level == 'e')
-    spdlog::set_level(spdlog::level::err);
-  else
-    return -1;  // failed
-  return 0;     // success
+void set_loglevel(std::shared_ptr<spdlog::logger> const& logger, loglevel level) {
+  logger->set_level(level);
 }
 
 }

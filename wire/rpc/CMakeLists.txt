@@ -13,11 +13,14 @@ set(include_dir ${author}/${module}/${submodule})
 list(APPEND interfaces
   "service-provider.hpp"
   "context.hpp"
+  "interceptor.hpp"
+  "log-interceptor.hpp"
 )
 
 list(APPEND sources 
   "service-provider.cpp"
   "context.cpp"
+  "log-interceptor.cpp"
   ${interfaces}
 )
 
@@ -48,6 +51,7 @@ target_include_directories(
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}> # for headers when building
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for generated files in build mode
   $<INSTALL_INTERFACE:include/${include_dir}> # for clients in install mode
+  ${zipkin_INCLUDE_DIRS}
 )
 
 set(export_targets      ${target}Targets)

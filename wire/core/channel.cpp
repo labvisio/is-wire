@@ -1,6 +1,5 @@
-#include "internal/utils.hpp"
-//
 #include "channel.hpp"
+#include "internal/amqp.hpp"
 #include "logger.hpp"
 
 namespace is {
@@ -13,13 +12,11 @@ std::string get_exchange(Subscription&, Channel const& channel) {
   return channel.exchange;
 }
 
-Channel::Channel(std::string const& uri) {
-  impl = AmqpClient::Channel::CreateFromUri(uri);
-  exchange = "is";
-}
+Channel::Channel(std::string const& uri, std::shared_ptr<opentracing::v1::Tracer> const& tracer)
+    : impl(AmqpClient::Channel::CreateFromUri(uri)), exchange("is"), tracer(tracer) {}
 
 void Channel::publish(std::string const& topic, Message const& message) const {
-  auto msg = to_internal_message(message);
+  auto msg = to_internal_message(message, tracer);
   impl->BasicPublish(exchange, topic, msg);
 }
 
@@ -29,13 +26,13 @@ void Channel::publish(Message const& message) const {
 
 Message Channel::consume() const {
   auto msg = impl->BasicConsumeMessage();
-  return from_internal_message(msg);
+  return from_internal_message(msg, tracer);
 }
 
 boost::optional<Message> Channel::consume_for(system_clock::duration const& duration) const {
   auto msg = boost::shared_ptr<AmqpClient::Envelope>{};
   auto millis = duration_cast<milliseconds>(duration).count();
-  if (millis >= 0 && impl->BasicConsumeMessage(msg, millis)) { return from_internal_message(msg); }
+  if (millis >= 0 && impl->BasicConsumeMessage(msg, millis)) { return from_internal_message(msg, tracer); }
   return boost::none;
 }
 

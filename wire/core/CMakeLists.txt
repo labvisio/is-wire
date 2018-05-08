@@ -7,6 +7,7 @@ find_package(rabbitmq-c REQUIRED)
 find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(is-msgs REQUIRED)
+find_package(OpenTracing REQUIRED)
 
 set(author "is")
 set(module "wire")
@@ -24,14 +25,16 @@ list(APPEND sources
   "channel.cpp"
   "subscription.cpp"
   "logger.cpp"
-  "internal/utils.cpp"
-  "internal/utils.hpp"
+  "internal/amqp.cpp"
+  "internal/amqp.hpp"
+  "internal/amqp_ot_carrier.cpp"
+  "internal/amqp_ot_carrier.hpp"
   ${interfaces}
 )
 
 list(APPEND tests
   "message.t.cpp"
-  "internal/utils.t.cpp"
+  "internal/amqp.t.cpp"
 )
 
 #######
@@ -54,6 +57,7 @@ target_link_libraries(
   ${rabbitmq-c_LIBRARIES}
   ${Boost_LIBRARIES} 
  PUBLIC
+  OpenTracing::opentracing-static
   ${PROTOBUF_LIBRARIES} 
   is-msgs::is-msgs
   spdlog::spdlog

@@ -4,6 +4,7 @@
 #include <string>
 #include "boost/optional.hpp"
 #include "boost/shared_ptr.hpp"
+#include "opentracing/tracer.h"
 
 namespace AmqpClient {
 class Channel;
@@ -19,11 +20,13 @@ class Message;
 class Channel {
   boost::shared_ptr<AmqpClient::Channel> impl;
   std::string exchange;
+  std::shared_ptr<opentracing::v1::Tracer> const& tracer;
+
   friend boost::shared_ptr<AmqpClient::Channel> get_impl(Subscription&, Channel& channel);
   friend std::string get_exchange(Subscription&, Channel const& channel);
 
  public:
-  Channel(std::string const& uri);
+  Channel(std::string const& uri, std::shared_ptr<opentracing::v1::Tracer> const& = nullptr); 
   Channel(Channel const&) = default;
   Channel(Channel&&) = default;
 

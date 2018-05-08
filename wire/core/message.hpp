@@ -5,6 +5,7 @@
 #include "google/protobuf/message.h"
 #include "google/protobuf/util/json_util.h"
 #include "is/msgs/wire.pb.h"
+#include "opentracing/span.h"
 
 namespace is {
 
@@ -86,23 +87,16 @@ Message::Message(T const& object) : Message() {
 template <typename T>
 boost::optional<T> Message::unpack() const {
   T object;
-  if (_content_type == wire::ContentType::PROTOBUF) {
+  switch (_content_type) {
+  case wire::ContentType::NONE:
+    // [[fallthrough]]
+  case wire::ContentType::PROTOBUF:
     if (object.ParseFromString(_body)) return object;
-  }
-  if (_content_type == wire::ContentType::JSON) {
+    break;
+  case wire::ContentType::JSON:
     if (google::protobuf::util::JsonStringToMessage(_body, &object).ok()) return object;
+    break;
   }
-
-  // User didn't provide a valid type, try to guess.
-  if (google::protobuf::util::JsonStringToMessage(_body, &object).ok()) {
-    // set_content_type(ContentType::JSON);
-    return object;
-  }
-  if (object.ParseFromString(_body)) {
-    // set_content_type(ContentType::PROTOBUF);
-    return object;
-  }
-
   return boost::none;
 }
 

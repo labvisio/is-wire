@@ -1,9 +1,10 @@
 
-#include "utils.hpp"
+#include "amqp.hpp"
 
 namespace is {
 
-boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(is::Message const& message) {
+boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(
+    is::Message const& message, std::shared_ptr<opentracing::v1::Tracer> const& tracer) {
   using namespace std::chrono;
 
   auto internal = AmqpClient::BasicMessage::Create(message.body());
@@ -27,18 +28,19 @@ boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(is::Message cons
     internal->CorrelationId(std::to_string(message.correlation_id()));
   }
 
+  AmqpClient::Table headers;
   if (message.has_status()) {
     std::string bytes;
     google::protobuf::util::MessageToJsonString(message.status(), &bytes);
-    AmqpClient::Table headers;
-    headers[AmqpClient::TableKey("rpc-status")] = AmqpClient::TableValue(bytes);
-    internal->HeaderTable(headers);
+    headers["rpc-status"] = AmqpClient::TableValue(bytes);
   }
 
+  internal->HeaderTable(headers);
   return internal;
 }
 
-is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const& internal) {
+is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const& internal,
+                                  std::shared_ptr<opentracing::v1::Tracer> const& tracer) {
   using namespace std::chrono;
 
   auto message = is::Message{};
@@ -71,7 +73,7 @@ is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const&
     // dependency
     auto headers = internal->Message()->HeaderTable();
     auto keyval_it = headers.find("rpc-status");
-    if (keyval_it == headers.end()) {
+    if (keyval_it != headers.end()) {
       wire::Status status;
       google::protobuf::util::JsonStringToMessage(keyval_it->second.GetString(), &status);
       message.set_status(status);
@@ -86,12 +88,14 @@ std::string content_type_to_string(wire::ContentType type) {
   case wire::ContentType::NONE: return "";
   case wire::ContentType::JSON: return "application/json";
   case wire::ContentType::PROTOBUF: return "application/x-protobuf";
+  case wire::ContentType::PROTOTEXT: return "application/x-prototext";
   }
 }
 
 wire::ContentType content_type_from_string(std::string const& str) {
   if (str == "application/x-protobuf") return wire::ContentType::PROTOBUF;
   if (str == "application/json") return wire::ContentType::JSON;
+  if (str == "application/x-prototext") return wire::ContentType::PROTOTEXT;
   return wire::ContentType::NONE;
 }
 

@@ -1,6 +1,6 @@
-#include "internal/utils.hpp"
-//
 #include "channel.hpp"
+//
+#include "internal/amqp.hpp"
 #include "subscription.hpp"
 
 namespace is {
@@ -14,7 +14,7 @@ Subscription::Subscription(Channel& channel, std::string const& q) {
                      /*auto_delete=*/true);
   impl->BasicConsume(queue, tag, /*nolocal=*/false, /*noack=*/true,
                      /*exclusive=*/false);
-  subscribe(queue); // to receive replies
+  subscribe(queue);  // to receive replies
 }
 
 std::string Subscription::name() const {
@@ -30,8 +30,7 @@ void Subscription::subscribe(std::string const& topic) {
 }
 
 void Subscription::subscribe(std::vector<std::string> const& topics) {
-  for (auto&& topic : topics)
-    subscribe(topic);
+  for (auto&& topic : topics) subscribe(topic);
 }
 
 void Subscription::unsubscribe(std::string const& topic) {
@@ -39,8 +38,7 @@ void Subscription::unsubscribe(std::string const& topic) {
 }
 
 void Subscription::unsubscribe(std::vector<std::string> const& topics) {
-  for (auto&& topic : topics)
-    unsubscribe(topic);
+  for (auto&& topic : topics) unsubscribe(topic);
 }
 
 }  // namespace is

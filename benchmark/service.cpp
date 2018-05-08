@@ -1,20 +1,25 @@
-#include "google/protobuf/struct.pb.h"
 #include "is/wire/rpc.hpp"
+#include "is/msgs/image.pb.h"
+#include "is/wire/rpc/log-interceptor.hpp"
 
-using namespace google::protobuf;
+using namespace is::vision;
+using namespace is::wire;
 
-is::wire::Status hello(is::Context* ctx, Struct const& req, Struct* rep) {
-  auto fields = rep->mutable_fields();
-  auto value = google::protobuf::Value{};
-  value.set_string_value("valeu em, parabens");
-  (*fields)["field"] = value;
+Status hello(is::Context* ctx, Image const& req, Image* rep) {
+  return is::make_status(is::wire::StatusCode::OK);
+}
 
+Status thrower(is::Context* ctx, Image const& req, Image* rep) {
+  throw std::runtime_error("hodor");
   return is::make_status(is::wire::StatusCode::OK);
 }
 
 int main(int, char**) {
   auto channel = is::Channel{"amqp://localhost"};
   auto provider = is::ServiceProvider{channel};
-  provider.delegate<Struct, Struct>("hodor.hello", hello);
+  //is::LogInterceptor logs;
+  //provider.add_interceptor(logs);
+  provider.delegate<Image, Image>("hodor.hello", hello);
+  provider.delegate<Image, Image>("hodor.thrower", thrower);
   provider.run();
 }

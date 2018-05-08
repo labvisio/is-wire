@@ -1,10 +1,10 @@
 
 #include "gtest/gtest.h"
-#include "utils.hpp"
+#include "amqp.hpp"
 
 namespace {
 
-TEST(UtilsTest, PackUnpackEquality) {
+TEST(AmqpTest, PackUnpackEquality) {
   using namespace std::chrono;
 
   auto now = system_clock::time_point(seconds(129128));
@@ -17,17 +17,19 @@ TEST(UtilsTest, PackUnpackEquality) {
       .set_body("body")
       .set_content_type(is::wire::ContentType::PROTOBUF)
       .set_created_at(now)
+      .set_status(is::wire::StatusCode::OK, "ok then")
       .set_deadline(now + milliseconds(6788));
 
-  auto internal_msg = is::to_internal_message(msg);
+  auto internal_msg = is::to_internal_message(msg, nullptr);
   ASSERT_EQ(internal_msg->Body(), "body");
   ASSERT_EQ(internal_msg->CorrelationId(), std::to_string(cid));
   ASSERT_EQ(internal_msg->ContentType(), "application/x-protobuf");
   ASSERT_EQ(internal_msg->Timestamp(), 129128000);
   ASSERT_EQ(internal_msg->Expiration(), "6788");
 
-  auto envelope = AmqpClient::Envelope::Create(internal_msg, "ctag", 666, "exch", false, "topic", 22);
-  auto msg2 = is::from_internal_message(envelope);
+  auto envelope =
+      AmqpClient::Envelope::Create(internal_msg, "ctag", 666, "exch", false, "topic", 22);
+  auto msg2 = is::from_internal_message(envelope, nullptr);
 
   ASSERT_EQ(msg2.topic(), "topic");
   ASSERT_EQ(msg2.reply_to(), "reply");
@@ -35,6 +37,8 @@ TEST(UtilsTest, PackUnpackEquality) {
   ASSERT_EQ(msg2.correlation_id(), cid);
   ASSERT_EQ(msg2.content_type(), is::wire::ContentType::PROTOBUF);
   ASSERT_EQ(msg2.created_at(), now);
+  ASSERT_EQ(msg2.status().code(), is::wire::StatusCode::OK);
+  ASSERT_EQ(msg2.status().why(), "ok then");
   ASSERT_EQ(msg2.deadline(), now + milliseconds(6788));
   ASSERT_EQ(msg, msg2);
 }

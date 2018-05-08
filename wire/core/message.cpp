@@ -1,6 +1,5 @@
-#include "internal/utils.hpp"
-//
 #include "message.hpp"
+#include "internal/amqp.hpp"
 #include "subscription.hpp"
 
 namespace is {

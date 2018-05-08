@@ -2,11 +2,15 @@
 
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/spdlog.h"
+#include "is/msgs/utils.hpp"
 
 namespace is {
 
+using loglevel = spdlog::level::level_enum;
+
 std::shared_ptr<spdlog::logger> logger();
-int set_loglevel(char level);
+
+void set_loglevel(std::shared_ptr<spdlog::logger> const& logger, loglevel);
 
 template <class... Args>
 inline void info(Args&&... args) {

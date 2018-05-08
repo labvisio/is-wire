@@ -1,7 +1,7 @@
 #include "google/protobuf/struct.pb.h"
 #include "google/protobuf/util/message_differencer.h"
 #include "gtest/gtest.h"
-#include "internal/utils.hpp"
+#include "internal/amqp.hpp"
 #include "message.hpp"
 
 namespace {
@@ -55,9 +55,11 @@ TEST(MessageTest, MemberFunctions) {
   message.pack(make_test_object());
   ASSERT_TRUE(message.has_body());
 
-  message.set_status(is::wire::StatusCode::ALREADY_EXISTS);
+  ASSERT_FALSE(message.has_status());
+  message.set_status(is::wire::StatusCode::ALREADY_EXISTS, "hello");
   ASSERT_EQ(message.status().code(), is::wire::StatusCode::ALREADY_EXISTS);
-  ASSERT_EQ(message.status().why(), "");
+  ASSERT_EQ(message.status().why(), "hello");
+  ASSERT_TRUE(message.has_status());
 
   is::wire::Status status;
   status.set_code(is::wire::StatusCode::OK);

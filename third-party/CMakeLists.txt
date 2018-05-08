@@ -9,7 +9,12 @@ set(simpleamqpclient_git_tag "6323892d3e8701489fb945f45aa877a7e2a0ce31" CACHE ST
 set(spdlog_git_tag "71e93a4f2d52fb9f9dafdeea7386bf0c780981e3" CACHE STRING "Git branch name, commit id or tag")
 set(googletest_git_tag "278aba369c41e90e9e77a6f51443beb3692919cf" CACHE STRING "Git branch name, commit id or tag")
 set(googlebenchmark_git_tag "8986839e4ac67facb52abc7fff3d5082e854aab5" CACHE STRING "Git branch name, commit id or tag")
-set(is-msgs_git_tag "f928eb726c37aa53927a0762644db2b471533e97" CACHE STRING "Git branch name, commit id or tag")
+set(is-msgs_git_tag "2327d69291375209091b97a59c5f65f95b07b960" CACHE STRING "Git branch name, commit id or tag")
+set(zlib_git_tag "cacf7f1d4e3d44d871b605da3b647f07d718623f" CACHE STRING "Git branch name, commit id or tag")
+set(prometheus_git_tag "6f7d712eba93f807cca58d144f525ac53147a234" CACHE STRING "Git branch name, commit id or tag")
+set(opentracing-cpp_git_tag "d2e12fee4ff0b76b1e3ef7b0455d41217383e4aa" CACHE STRING "Git branch name, commit id or tag")
+#set(curl_git_tag "b692d6650a2282335edabd9a7f1eeff1cbd02fa1" CACHE STRING "Git branch name, commit id or tag")
+#set(zipkin-cpp-opentracing_git_tag "4077589309f72c0885c706125f5b5cc5ee49a53a" CACHE STRING "Git branch name, commit id or tag")
 
 ternary(protobuf_config BUILD_SHARED_LIBS "--enable-shared;--disable-static" "--enable-static;--disable-shared")
 import_project(protobuf 
@@ -69,3 +74,25 @@ import_project(is-msgs
   GIT https://github.com/labviros/is-msgs
   GIT_TAG ${is-msgs_git_tag}
 )
+
+import_project(zlib
+  GIT https://github.com/madler/zlib
+  GIT_TAG ${zlib_git_tag}
+)
+
+import_project(prometheus-cpp
+  DEPENDS protobuf zlib
+  GIT https://github.com/jupp0r/prometheus-cpp
+  GIT_TAG ${prometheus_git_tag}
+)
+
+import_project(opentracing-cpp
+  GIT https://github.com/opentracing/opentracing-cpp 
+  GIT_TAG ${opentracing-cpp_git_tag}
+)
+
+#import_project(zipkin-cpp-opentracing
+#  DEPENDS opentracing-cpp #curl
+#  GIT https://github.com/rnburn/zipkin-cpp-opentracing 
+#  GIT_TAG ${zipkin-cpp-opentracing_git_tag}
+#)
