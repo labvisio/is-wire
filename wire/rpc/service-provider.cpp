@@ -13,12 +13,13 @@ bool ServiceProvider::serve(Message const& in) const {
   const auto found = service != services.end();
   if (found) {
     auto out = Message::create_reply(in);
-    auto ctx = Context{service->first, &in, &out};
+    auto ctx = Context{in.topic(), &in, &out, channel.tracer()};
 
     for (auto&& interceptor : interceptors) before_call(interceptor, &ctx);
     service->second(&ctx, in, &out);
-    ctx.set_end();
     for (auto&& interceptor : interceptors) after_call(interceptor, &ctx);
+    ctx.finish();
+
     channel.publish(out);
   }
   return found;

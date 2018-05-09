@@ -17,6 +17,7 @@ list(APPEND interfaces
   "message.hpp"
   "channel.hpp"
   "subscription.hpp"
+  "opentracing.hpp"
   "logger.hpp"
 )
 
@@ -24,11 +25,10 @@ list(APPEND sources
   "message.cpp"
   "channel.cpp"
   "subscription.cpp"
+  "opentracing.cpp"
   "logger.cpp"
   "internal/amqp.cpp"
   "internal/amqp.hpp"
-  "internal/amqp_ot_carrier.cpp"
-  "internal/amqp_ot_carrier.hpp"
   ${interfaces}
 )
 

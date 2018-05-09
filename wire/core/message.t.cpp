@@ -70,6 +70,25 @@ TEST(MessageTest, MemberFunctions) {
 
   message.set_subscription_id("mysid");
   ASSERT_EQ(message.subscription_id(), "mysid");
+
+  auto metadata = message.mutable_metadata();
+  (*metadata)["x-b3-flags"] = "1";
+  (*metadata)["x-b3-parentspanid"] = "0000000000000000";
+  (*metadata)["x-b3-sampled"] = "1";
+  (*metadata)["x-b3-spanid"] = "d9f7be288fdad87f";
+  (*metadata)["x-b3-traceid"] = "d19f9083bcc4f48a";
+
+  ASSERT_NE(message.metadata().find("x-b3-flags"), message.metadata().end());
+  ASSERT_NE(message.metadata().find("x-b3-parentspanid"), message.metadata().end());
+  ASSERT_NE(message.metadata().find("x-b3-sampled"), message.metadata().end());
+  ASSERT_NE(message.metadata().find("x-b3-spanid"), message.metadata().end());
+  ASSERT_NE(message.metadata().find("x-b3-traceid"), message.metadata().end());
+
+  ASSERT_EQ(message.metadata().find("x-b3-flags")->second, "1");
+  ASSERT_EQ(message.metadata().find("x-b3-parentspanid")->second, "0000000000000000");
+  ASSERT_EQ(message.metadata().find("x-b3-sampled")->second, "1");
+  ASSERT_EQ(message.metadata().find("x-b3-spanid")->second, "d9f7be288fdad87f");
+  ASSERT_EQ(message.metadata().find("x-b3-traceid")->second, "d19f9083bcc4f48a");
 }
 
 TEST(MessageTest, FastConstruction) {

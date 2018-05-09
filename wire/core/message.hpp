@@ -1,11 +1,11 @@
 #pragma once
 
 #include <chrono>
+#include <unordered_map>
 #include "boost/optional.hpp"
 #include "google/protobuf/message.h"
 #include "google/protobuf/util/json_util.h"
 #include "is/msgs/wire.pb.h"
-#include "opentracing/span.h"
 
 namespace is {
 
@@ -26,6 +26,8 @@ class Message {
   std::string _reply_to;
   uint64_t _correlation_id;
 
+  std::unordered_map<std::string, std::string> _metadata;
+
  public:
   Message();
   template <typename T>
@@ -36,39 +38,49 @@ class Message {
   friend bool operator==(Message const& lhs, Message const& rhs);
   friend bool operator!=(Message const& lhs, Message const& rhs);
 
-  std::string body() const;
-  std::string topic() const;
-  uint64_t correlation_id() const;
-  std::string reply_to() const;
-  wire::ContentType content_type() const;
-  system_clock::time_point created_at() const;
-  system_clock::time_point deadline() const;
-  std::string subscription_id() const;
-  wire::Status status() const;
-
   bool has_body() const;
-  bool has_topic() const;
-  bool has_correlation_id() const;
-  bool has_reply_to() const;
-  bool has_content_type() const;
-  bool has_created_at() const;
-  bool has_deadline() const;
-  bool has_status() const;
-
+  std::string body() const;
   // Sets the raw content of the message (rarely used). Users should prefer using the pack function
   Message& set_body(std::string const& bytes);
+
+  bool has_topic() const;
+  std::string topic() const;
   Message& set_topic(std::string const& topic);
+
+  bool has_correlation_id() const;
+  uint64_t correlation_id() const;
   Message& set_correlation_id(uint64_t id);
+
+  bool has_reply_to() const;
+  std::string reply_to() const;
   Message& set_reply_to(std::string const& subscription_name);
   Message& set_reply_to(Subscription const&);
+
+  bool has_content_type() const;
+  wire::ContentType content_type() const;
   Message& set_content_type(wire::ContentType);
+
+  bool has_created_at() const;
+  system_clock::time_point created_at() const;
   Message& set_created_at(system_clock::time_point const&);
-  Message& set_deadline(system_clock::time_point const&);
+
+  bool has_deadline() const;
+  system_clock::time_point deadline() const;
+  bool deadline_exceeded() const;
   // Duration from now where the message is still valid
   Message& set_deadline(system_clock::duration const&);
+  Message& set_deadline(system_clock::time_point const&);
+
+  std::string subscription_id() const;
   Message& set_subscription_id(std::string const& subscription_id);
+
+  bool has_status() const;
+  wire::Status status() const;
   Message& set_status(wire::Status const& status);
   Message& set_status(wire::StatusCode const&, std::string const& why = "");
+
+  std::unordered_map<std::string, std::string> const& metadata() const;
+  std::unordered_map<std::string, std::string>* mutable_metadata();
 
   template <typename T>
   boost::optional<T> unpack() const;

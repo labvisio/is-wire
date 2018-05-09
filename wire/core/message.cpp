@@ -34,72 +34,14 @@ bool operator!=(Message const& lhs, Message const& rhs) {
   return !(lhs == rhs);
 }
 
-std::string Message::body() const {
-  return _body;
-}
-
-std::string Message::topic() const {
-  return _topic;
-}
-
-uint64_t Message::correlation_id() const {
-  return _correlation_id;
-}
-
-std::string Message::reply_to() const {
-  return _reply_to;
-}
-
-wire::ContentType Message::content_type() const {
-  return _content_type;
-}
-
-system_clock::time_point Message::created_at() const {
-  return _created_at;
-}
-
-system_clock::time_point Message::deadline() const {
-  return _deadline;
-}
-
-std::string Message::subscription_id() const {
-  return _sid;
-}
-
-wire::Status Message::status() const {
-  return _status;
-}
+// Body
 
 bool Message::has_body() const {
   return !_body.empty();
 }
 
-bool Message::has_topic() const {
-  return !_topic.empty();
-}
-
-bool Message::has_correlation_id() const {
-  return _correlation_id != 0;
-}
-
-bool Message::has_reply_to() const {
-  return !_reply_to.empty();
-}
-
-bool Message::has_content_type() const {
-  return _content_type != wire::ContentType::NONE;
-}
-
-bool Message::has_created_at() const {
-  return _created_at.time_since_epoch().count() != 0;
-}
-
-bool Message::has_deadline() const {
-  return _deadline.time_since_epoch().count() != 0;
-}
-
-bool Message::has_status() const {
-  return !(_status.code() == wire::StatusCode::UNKNOWN && _status.why().empty());
+std::string Message::body() const {
+  return _body;
 }
 
 Message& Message::set_body(std::string const& bytes) {
@@ -107,14 +49,44 @@ Message& Message::set_body(std::string const& bytes) {
   return *this;
 }
 
+// Topic
+
+bool Message::has_topic() const {
+  return !_topic.empty();
+}
+
+std::string Message::topic() const {
+  return _topic;
+}
+
 Message& Message::set_topic(std::string const& topic) {
   _topic = topic;
   return *this;
 }
 
+// Correlation ID
+
+bool Message::has_correlation_id() const {
+  return _correlation_id != 0;
+}
+
+uint64_t Message::correlation_id() const {
+  return _correlation_id;
+}
+
 Message& Message::set_correlation_id(uint64_t id) {
   _correlation_id = id;
   return *this;
+}
+
+// Reply To
+
+bool Message::has_reply_to() const {
+  return !_reply_to.empty();
+}
+
+std::string Message::reply_to() const {
+  return _reply_to;
 }
 
 Message& Message::set_reply_to(std::string const& reply_to) {
@@ -128,14 +100,48 @@ Message& Message::set_reply_to(Subscription const& subscription) {
   return *this;
 }
 
+// Content Type
+
+bool Message::has_content_type() const {
+  return _content_type != wire::ContentType::NONE;
+}
+
+wire::ContentType Message::content_type() const {
+  return _content_type;
+}
+
 Message& Message::set_content_type(wire::ContentType type) {
   _content_type = type;
   return *this;
 }
 
+// Created At
+
+bool Message::has_created_at() const {
+  return _created_at.time_since_epoch().count() != 0;
+}
+
+system_clock::time_point Message::created_at() const {
+  return _created_at;
+}
+
 Message& Message::set_created_at(system_clock::time_point const& time_point) {
   _created_at = time_point;
   return *this;
+}
+
+// Deadline
+
+bool Message::has_deadline() const {
+  return _deadline.time_since_epoch().count() != 0;
+}
+
+bool Message::deadline_exceeded() const {
+  return has_deadline() && system_clock::now() > deadline();
+}
+
+system_clock::time_point Message::deadline() const {
+  return _deadline;
 }
 
 Message& Message::set_deadline(system_clock::time_point const& time_point) {
@@ -148,9 +154,25 @@ Message& Message::set_deadline(system_clock::duration const& duration) {
   return *this;
 }
 
+// Subscription ID
+
+std::string Message::subscription_id() const {
+  return _sid;
+}
+
 Message& Message::set_subscription_id(std::string const& sid) {
   _sid = sid;
   return *this;
+}
+
+// Status
+
+bool Message::has_status() const {
+  return !(_status.code() == wire::StatusCode::UNKNOWN && _status.why().empty());
+}
+
+wire::Status Message::status() const {
+  return _status;
 }
 
 Message& Message::set_status(wire::Status const& status) {
@@ -162,6 +184,16 @@ Message& Message::set_status(wire::StatusCode const& code, std::string const& wh
   _status.set_code(code);
   _status.set_why(why);
   return *this;
+}
+
+// Metadata
+
+std::unordered_map<std::string, std::string> const& Message::metadata() const {
+  return _metadata;
+}
+
+std::unordered_map<std::string, std::string>* Message::mutable_metadata() {
+  return &_metadata;
 }
 
 }  // namespace is

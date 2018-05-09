@@ -4,3 +4,4 @@
 #include "core/message.hpp"
 #include "core/subscription.hpp"
 #include "core/logger.hpp"
+#include "core/opentracing.hpp"

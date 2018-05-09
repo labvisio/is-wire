@@ -2,11 +2,36 @@
 
 namespace is {
 
-Context::Context(std::string const& service, Message const* req, Message* rep)
-    : name(service), req(req), rep(rep), start(system_clock::now()) {}
+Context::Context(std::string const& service, Message const* req, Message* rep,
+                 std::shared_ptr<opentracing::v1::Tracer> const& t)
+    : name(service), req(req), rep(rep), tracer(t) {
+  if (tracer != nullptr) {
+    auto reader = is::OtReader{req};
+    auto maybe_span_context = tracer->Extract(reader);
 
-void Context::set_end(system_clock::time_point const& time_point) {
-  end = time_point;
+    if (maybe_span_context) {
+      span_context = std::move(maybe_span_context.value());
+      span = tracer->StartSpan(service, {opentracing::ChildOf(span_context.get())});
+    }
+  }
+}
+
+Context::~Context() {
+  if (tracer != nullptr) { span->Finish(); }
+}
+
+void Context::finish() {
+  if (tracer != nullptr) {
+    auto writer = is::OtWriter{rep};
+    tracer->Inject(span->context(), writer);
+  }
+}
+
+std::unique_ptr<opentracing::v1::Span> Context::start_span(std::string const& name) {
+  if (tracer != nullptr) {
+    return tracer->StartSpan(name, {opentracing::ChildOf(span_context.get())});
+  }
+  return nullptr;
 }
 
 std::string Context::service() const {
@@ -14,15 +39,15 @@ std::string Context::service() const {
 }
 
 system_clock::duration Context::duration() const {
-  return end - start;
+  return system_clock::now() - req->created_at();
 }
 
-is::Message const* Context::request() const {
-  return req;
+bool Context::deadline_exceeded() const {
+  return req->deadline_exceeded();
 }
 
-is::Message* Context::reply() const {
-  return rep;
+wire::Status Context::status() const {
+  return rep->status();
 }
 
 }  // namespace is

@@ -20,15 +20,18 @@ class Message;
 class Channel {
   boost::shared_ptr<AmqpClient::Channel> impl;
   std::string exchange;
-  std::shared_ptr<opentracing::v1::Tracer> const& tracer;
+  std::shared_ptr<opentracing::v1::Tracer> _tracer;
 
   friend boost::shared_ptr<AmqpClient::Channel> get_impl(Subscription&, Channel& channel);
   friend std::string get_exchange(Subscription&, Channel const& channel);
 
  public:
-  Channel(std::string const& uri, std::shared_ptr<opentracing::v1::Tracer> const& = nullptr); 
+  Channel(std::string const& uri);
   Channel(Channel const&) = default;
   Channel(Channel&&) = default;
+
+  void set_tracer(std::shared_ptr<opentracing::v1::Tracer> const&);
+  std::shared_ptr<opentracing::v1::Tracer> tracer() const;
 
   void publish(std::string const& topic, Message const& message) const;
   void publish(Message const& message) const;

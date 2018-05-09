@@ -11,6 +11,7 @@ using loglevel = spdlog::level::level_enum;
 std::shared_ptr<spdlog::logger> logger();
 
 void set_loglevel(std::shared_ptr<spdlog::logger> const& logger, loglevel);
+void set_loglevel(loglevel);
 
 template <class... Args>
 inline void info(Args&&... args) {

@@ -11,9 +11,9 @@ void LogInterceptor::before_call(Context*) {}
 void LogInterceptor::after_call(Context* ctx) {
   auto service = ctx->service();
   auto took = duration_cast<milliseconds>(ctx->duration());
-  auto code = ctx->reply()->status().code();
+  auto code = ctx->status().code();
   auto status = wire::StatusCode_Name(code);
-  auto why = ctx->reply()->status().why();
+  auto why = ctx->status().why();
 
   switch (code) {
   case wire::StatusCode::OK: info("{};{};{}", service, took, status); break;

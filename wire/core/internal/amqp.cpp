@@ -3,8 +3,7 @@
 
 namespace is {
 
-boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(
-    is::Message const& message, std::shared_ptr<opentracing::v1::Tracer> const& tracer) {
+boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(is::Message const& message) {
   using namespace std::chrono;
 
   auto internal = AmqpClient::BasicMessage::Create(message.body());
@@ -35,12 +34,15 @@ boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(
     headers["rpc-status"] = AmqpClient::TableValue(bytes);
   }
 
+  for (auto&& data : message.metadata()) {
+    headers[data.first] = AmqpClient::TableValue(data.second);
+  }
+
   internal->HeaderTable(headers);
   return internal;
 }
 
-is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const& internal,
-                                  std::shared_ptr<opentracing::v1::Tracer> const& tracer) {
+is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const& internal) {
   using namespace std::chrono;
 
   auto message = is::Message{};
@@ -77,7 +79,11 @@ is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const&
       wire::Status status;
       google::protobuf::util::JsonStringToMessage(keyval_it->second.GetString(), &status);
       message.set_status(status);
+      headers.erase(keyval_it);
     }
+
+    auto metadata_ptr = message.mutable_metadata();
+    for (auto&& header : headers) { (*metadata_ptr)[header.first] = header.second.GetString(); }
   }
 
   return message;

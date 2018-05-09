@@ -15,4 +15,8 @@ void set_loglevel(std::shared_ptr<spdlog::logger> const& logger, loglevel level)
   logger->set_level(level);
 }
 
+void set_loglevel(loglevel level) {
+  set_loglevel(logger(), level);
+}
+
 }
