@@ -15,12 +15,14 @@ list(APPEND interfaces
   "context.hpp"
   "interceptor.hpp"
   "log-interceptor.hpp"
+  "metrics-interceptor.hpp"
 )
 
 list(APPEND sources 
   "service-provider.cpp"
   "context.cpp"
   "log-interceptor.cpp"
+  "metrics-interceptor.cpp"
   ${interfaces}
 )
 
@@ -48,7 +50,7 @@ target_link_libraries(
 target_include_directories(
   ${target}
  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}> # for headers when building
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..> # for headers when building
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for generated files in build mode
   $<INSTALL_INTERFACE:include/${include_dir}> # for clients in install mode
   ${zipkin_INCLUDE_DIRS}

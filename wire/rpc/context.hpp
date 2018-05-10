@@ -1,7 +1,7 @@
 #pragma once
 
-#include "message.hpp"
-#include "opentracing.hpp"
+#include "../core/message.hpp"
+#include "../core/opentracing.hpp"
 #include "opentracing/span.h"
 
 namespace is {

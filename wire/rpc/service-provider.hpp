@@ -3,20 +3,21 @@
 #include <exception>
 #include <functional>
 #include <unordered_map>
-#include "channel.hpp"
+#include "../core/channel.hpp"
+#include "../core/logger.hpp"
+#include "../core/message.hpp"
+#include "../core/subscription.hpp"
 #include "context.hpp"
 #include "interceptor.hpp"
 #include "is/msgs/utils.hpp"
 #include "is/msgs/wire.pb.h"
-#include "logger.hpp"
-#include "message.hpp"
-#include "subscription.hpp"
 
 namespace is {
 
 class ServiceProvider {
   Channel channel;
   std::unordered_map<std::string, std::function<void(Context*, Message const&, Message*)>> services;
+  std::unordered_map<std::string, std::string> names;
   std::vector<Interceptor> interceptors;
 
  public:
@@ -68,6 +69,7 @@ void ServiceProvider::delegate(
     }
     return out;
   };
+  names[subscription.id()] = service;
 }
 
 }  // namespace is

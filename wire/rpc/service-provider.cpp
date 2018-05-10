@@ -9,14 +9,17 @@ void ServiceProvider::add_interceptor(Interceptor const& interceptor) {
 }
 
 bool ServiceProvider::serve(Message const& in) const {
-  const auto service = services.find(in.subscription_id());
-  const auto found = service != services.end();
+  const auto sid = in.subscription_id();
+  const auto service = services.find(sid);
+  const auto name = names.find(sid);
+
+  const auto found = service != services.end() && name != names.end();
   if (found) {
     auto out = Message::create_reply(in);
-    auto ctx = Context{in.topic(), &in, &out, channel.tracer()};
+    auto ctx = Context{name->second, &in, &out, channel.tracer()};
 
     for (auto&& interceptor : interceptors) before_call(interceptor, &ctx);
-    service->second(&ctx, in, &out);
+    if (!ctx.deadline_exceeded()) { service->second(&ctx, in, &out); }
     for (auto&& interceptor : interceptors) after_call(interceptor, &ctx);
     ctx.finish();
 

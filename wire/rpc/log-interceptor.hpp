@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interceptor.hpp"
-#include "logger.hpp"
+#include "../core/logger.hpp"
 
 namespace is {
 
