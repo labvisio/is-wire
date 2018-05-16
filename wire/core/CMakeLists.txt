@@ -122,7 +122,7 @@ if(enable_tests)
     add_executable(${target} ${source})
     set_property(TARGET ${target} PROPERTY CXX_STANDARD 11)
     target_link_libraries(${target} GTest::GTest GTest::Main ${deps})
-    add_test(${target} ${target}) 
+    add_test(NAME ${target} COMMAND $<TARGET_FILE:${target}>)
   endfunction()
 
   foreach(test ${tests})

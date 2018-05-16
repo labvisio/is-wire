@@ -7,4 +7,3 @@ find_dependency(is-msgs)
 find_dependency(OpenTracing)
 
 include("${CMAKE_CURRENT_LIST_DIR}/is-wire-coreTargets.cmake")
-
