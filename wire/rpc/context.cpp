@@ -43,7 +43,9 @@ system_clock::duration Context::duration() const {
 }
 
 bool Context::deadline_exceeded() const {
-  return req->deadline_exceeded();
+  auto exceeded = req->deadline_exceeded();
+  if (exceeded) { rep->set_status(wire::StatusCode::DEADLINE_EXCEEDED, ""); }
+  return exceeded;
 }
 
 wire::Status Context::status() const {

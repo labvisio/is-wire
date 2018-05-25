@@ -1,12 +1,7 @@
 #pragma once
 
-#include <boost/asio.hpp>
-#include <chrono>
-#include <iomanip>
-#include <limits>
 #include "../message.hpp"
 #include "SimpleAmqpClient/SimpleAmqpClient.h"
-#include "opentracing/tracer.h"
 
 namespace is {
 

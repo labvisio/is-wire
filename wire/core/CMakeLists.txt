@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+
 include(GNUInstallDirs)
 
 find_package(Boost REQUIRED system chrono)
@@ -55,10 +55,10 @@ target_link_libraries(
  PRIVATE
   ${SimpleAmqpClient_LIBRARIES}
   ${rabbitmq-c_LIBRARIES}
-  ${Boost_LIBRARIES} 
+  Boost::chrono Boost::system
  PUBLIC
   OpenTracing::opentracing-static
-  ${PROTOBUF_LIBRARIES} 
+  protobuf::libprotobuf
   is-msgs::is-msgs
   spdlog::spdlog
 )
@@ -73,9 +73,6 @@ target_include_directories(
  PRIVATE
   ${SimpleAmqpClient_INCLUDE_DIRS}
   ${rabbitmq-c_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS} 
- PUBLIC
-  ${PROTOBUF_INCLUDE_DIRS} 
 )
 
 set(export_targets      ${target}Targets)

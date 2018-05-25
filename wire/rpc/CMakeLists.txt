@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.5)
+
 include(GNUInstallDirs)
 
 find_package(is-msgs REQUIRED)
+find_package(prometheus-cpp REQUIRED)
 
 set(author "is")
 set(module "wire")
@@ -44,6 +45,7 @@ target_link_libraries(
  PUBLIC
   is-wire::is-wire-core
   is-msgs::is-msgs
+  prometheus-cpp::prometheus-cpp
 )
 
 # header dependencies
@@ -53,7 +55,6 @@ target_include_directories(
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..> # for headers when building
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for generated files in build mode
   $<INSTALL_INTERFACE:include/${include_dir}> # for clients in install mode
-  ${zipkin_INCLUDE_DIRS}
 )
 
 set(export_targets      ${target}Targets)

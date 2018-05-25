@@ -1,5 +1,12 @@
 
 #include "amqp.hpp"
+#include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <iomanip>
+#include <limits>
+#include "boost/asio.hpp"
+#include "spdlog/fmt/fmt.h"
 
 namespace is {
 
@@ -24,7 +31,7 @@ boost::shared_ptr<AmqpClient::BasicMessage> to_internal_message(is::Message cons
 
   if (message.has_reply_to()) { internal->ReplyTo(message.reply_to()); }
   if (message.has_correlation_id()) {
-    internal->CorrelationId(std::to_string(message.correlation_id()));
+    internal->CorrelationId(fmt::format("{:X}", message.correlation_id()));
   }
 
   AmqpClient::Table headers;
@@ -67,7 +74,9 @@ is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const&
 
   if (internal->Message()->ReplyToIsSet()) { message.set_reply_to(internal->Message()->ReplyTo()); }
   if (internal->Message()->CorrelationIdIsSet()) {
-    message.set_correlation_id(std::stoull(internal->Message()->CorrelationId()));
+    auto cid = internal->Message()->CorrelationId();
+    cid.erase(std::remove(cid.begin(), cid.end(), '-'), cid.end());
+    message.set_correlation_id(strtoull(cid.data(), nullptr, 16));
   }
 
   if (internal->Message()->HeaderTableIsSet()) {
@@ -117,10 +126,7 @@ std::string hostname() {
 }
 
 std::string consumer_id() {
-  std::stringstream ss;
-  ss << hostname() << '/' << std::uppercase << std::setfill('0') << std::setw(4) << std::hex
-     << make_random_uid();
-  return ss.str();
+  return fmt::format("{}/{:X}", hostname(), make_random_uid());
 }
 
 }  // namespace is

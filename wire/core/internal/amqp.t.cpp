@@ -10,7 +10,7 @@ TEST(AmqpTest, PackUnpackEquality) {
   auto now = system_clock::time_point(seconds(129128));
 
   auto msg = is::Message{};
-  auto cid = is::make_random_uid();
+  auto cid = 0xd9f7be288fdad87f;
   msg.set_topic("topic")
       .set_correlation_id(cid)
       .set_reply_to("reply")
@@ -29,7 +29,7 @@ TEST(AmqpTest, PackUnpackEquality) {
 
   auto internal_msg = is::to_internal_message(msg);
   ASSERT_EQ(internal_msg->Body(), "body");
-  ASSERT_EQ(internal_msg->CorrelationId(), std::to_string(cid));
+  ASSERT_EQ(internal_msg->CorrelationId(), "D9F7BE288FDAD87F");
   ASSERT_EQ(internal_msg->ContentType(), "application/x-protobuf");
   ASSERT_EQ(internal_msg->Timestamp(), 129128000);
   ASSERT_EQ(internal_msg->Expiration(), "6788");
@@ -49,6 +49,15 @@ TEST(AmqpTest, PackUnpackEquality) {
   ASSERT_EQ(msg2.deadline(), now + milliseconds(6788));
   ASSERT_EQ(msg2.metadata(), msg.metadata());
   ASSERT_EQ(msg, msg2);
+
+  // Should be able to remove '-' from ids
+  internal_msg->CorrelationId("d9f7----be2-88fdad87f");
+  auto msg3 = is::from_internal_message(envelope);
+  ASSERT_EQ(msg3.correlation_id(), cid);
+
+  // Invalid ids should be safely ignored
+  internal_msg->CorrelationId("d9f7----bMZXMNZMNXMZNXe2-88fdad87f");
+  auto msg4 = is::from_internal_message(envelope);
 }
 
 }  // namespace
