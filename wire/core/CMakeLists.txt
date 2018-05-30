@@ -8,6 +8,7 @@ find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(is-msgs REQUIRED)
 find_package(OpenTracing REQUIRED)
+find_package(Threads)
 
 set(author "is")
 set(module "wire")
@@ -55,7 +56,9 @@ target_link_libraries(
  PRIVATE
   ${SimpleAmqpClient_LIBRARIES}
   ${rabbitmq-c_LIBRARIES}
-  Boost::chrono Boost::system
+  Boost::chrono
+  Boost::system
+  Threads::Threads
  PUBLIC
   OpenTracing::opentracing-static
   protobuf::libprotobuf

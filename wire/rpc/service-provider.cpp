@@ -24,7 +24,8 @@ bool ServiceProvider::serve(Message const& req) const {
     // We check for timeout here instead of checking before publishing to avoid Status inconsistency
     // beetwen what the interceptors see and what actually happens
     auto timeouted = ctx.deadline_exceeded();
-
+    if (timeouted) { rep.set_status(wire::StatusCode::DEADLINE_EXCEEDED, ""); }
+    
     for (auto&& interceptor : interceptors) after_call(interceptor, &ctx);
     ctx.finish();
 

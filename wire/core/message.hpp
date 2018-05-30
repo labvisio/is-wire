@@ -6,6 +6,7 @@
 #include "google/protobuf/message.h"
 #include "google/protobuf/util/json_util.h"
 #include "is/msgs/wire.pb.h"
+#include "opentracing/propagation.h"
 
 namespace is {
 
@@ -81,6 +82,11 @@ class Message {
 
   std::unordered_map<std::string, std::string> const& metadata() const;
   std::unordered_map<std::string, std::string>* mutable_metadata();
+
+  void inject_tracing(std::shared_ptr<opentracing::v1::Tracer> const&,
+                      opentracing::v1::SpanContext const&);
+  opentracing::expected<std::unique_ptr<opentracing::SpanContext>> extract_tracing(
+      std::shared_ptr<opentracing::v1::Tracer> const&) const;
 
   template <typename T>
   boost::optional<T> unpack() const;

@@ -18,8 +18,8 @@ class Subscription;
 class Message;
 
 class Channel {
-  boost::shared_ptr<AmqpClient::Channel> impl;
-  std::string exchange;
+  boost::shared_ptr<AmqpClient::Channel> _impl;
+  std::string _exchange;
   std::shared_ptr<opentracing::v1::Tracer> _tracer;
 
   friend boost::shared_ptr<AmqpClient::Channel> get_impl(Subscription&, Channel& channel);

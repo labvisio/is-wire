@@ -1,5 +1,6 @@
 #include "message.hpp"
 #include "internal/amqp.hpp"
+#include "opentracing.hpp"
 #include "subscription.hpp"
 
 namespace is {
@@ -194,6 +195,20 @@ std::unordered_map<std::string, std::string> const& Message::metadata() const {
 
 std::unordered_map<std::string, std::string>* Message::mutable_metadata() {
   return &_metadata;
+}
+
+// Opentracing
+
+void Message::inject_tracing(std::shared_ptr<opentracing::v1::Tracer> const& tracer,
+                             opentracing::v1::SpanContext const& context) {
+  auto writer = OtWriter{this};
+  tracer->Inject(context, writer);
+}
+
+opentracing::expected<std::unique_ptr<opentracing::SpanContext>> Message::extract_tracing(
+    std::shared_ptr<opentracing::v1::Tracer> const& tracer) const {
+  auto reader = OtReader{this};
+  return tracer->Extract(reader);
 }
 
 }  // namespace is

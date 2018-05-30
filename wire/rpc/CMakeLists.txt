@@ -86,7 +86,7 @@ install(
 install(FILES ${export_config_file} DESTINATION ${export_destination})
 
 # create library alias (less error prone to typos)
-set(target_alias ${export_namespace}${submodule})
+set(target_alias ${export_namespace}${target})
 add_library(${target_alias} ALIAS ${target})
 
 #####

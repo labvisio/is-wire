@@ -9,6 +9,7 @@ is-msgs/[>=1.1]@is/stable
 
 [build_requires]
 gtest/[>=1.0]@bincrafters/stable
+zipkin-cpp-opentracing/0.3.1@is/stable
 
 [generators]
 cmake
