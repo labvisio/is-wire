@@ -8,7 +8,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh './build.sh'
+        sh '''./bootstrap.sh
+./build.sh'''
       }
     }
   }
