@@ -27,10 +27,12 @@ install(FILES ${export_config_file} DESTINATION ${export_destination})
 #### Tests
 #######
 
-add_executable(service service.t.cpp)
-target_link_libraries(service PUBLIC is-wire::is-wire-rpc ${CONAN_LIBS})
-set_property(TARGET service PROPERTY CXX_STANDARD 11)
+if(enable_tests)
+  add_executable(service service.t.cpp)
+  target_link_libraries(service PUBLIC is-wire::is-wire-rpc ${CONAN_LIBS})
+  set_property(TARGET service PROPERTY CXX_STANDARD 11)
 
-add_executable(client client.t.cpp)
-target_link_libraries(client PUBLIC is-wire::is-wire-core ${CONAN_LIBS})
-set_property(TARGET client PROPERTY CXX_STANDARD 11)
+  add_executable(client client.t.cpp)
+  target_link_libraries(client PUBLIC is-wire::is-wire-core ${CONAN_LIBS})
+  set_property(TARGET client PROPERTY CXX_STANDARD 11)
+endif(enable_tests)
