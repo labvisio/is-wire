@@ -1,12 +1,12 @@
-
 include(GNUInstallDirs)
 
-find_package(Boost REQUIRED system chrono)
 find_package(spdlog REQUIRED)
 find_package(rabbitmq-c REQUIRED)
 find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(is-msgs REQUIRED)
+# Boost dependency needs to come after is-msgs due to some weird cmake behaviour
+find_package(Boost REQUIRED COMPONENTS system chrono)
 find_package(OpenTracing REQUIRED)
 find_package(Threads)
 
@@ -59,9 +59,9 @@ target_link_libraries(
   Boost::chrono
   Boost::system
   Threads::Threads
+  protobuf::libprotobuf
  PUBLIC
   OpenTracing::opentracing-static
-  protobuf::libprotobuf
   is-msgs::is-msgs
   spdlog::spdlog
 )
