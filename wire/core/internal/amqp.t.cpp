@@ -60,4 +60,14 @@ TEST(AmqpTest, PackUnpackEquality) {
   auto msg4 = is::from_internal_message(envelope);
 }
 
+TEST(AmqpTest, ContentTypes) {
+  for (int i = 0; i < is::wire::ContentType_ARRAYSIZE; ++i) {
+    auto msg = is::Message{};
+    msg.set_content_type((is::wire::ContentType)i);
+    auto msg2 = is::from_internal_message(
+        AmqpClient::Envelope::Create(is::to_internal_message(msg), "", 0, "", false, "", 0));
+    ASSERT_EQ(msg.content_type(), msg2.content_type());
+  }
+}
+
 }  // namespace

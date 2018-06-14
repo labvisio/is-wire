@@ -99,18 +99,16 @@ is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const&
 }
 
 std::string content_type_to_string(wire::ContentType type) {
-  switch (type) {
-  case wire::ContentType::NONE: return "";
-  case wire::ContentType::JSON: return "application/json";
-  case wire::ContentType::PROTOBUF: return "application/x-protobuf";
-  case wire::ContentType::PROTOTEXT: return "application/x-prototext";
-  }
+  if (type == wire::ContentType::JSON) return "application/json";
+  if (type == wire::ContentType::PROTOBUF) return "application/x-protobuf";
+  if (type == wire::ContentType::PROTOTEXT) return "application/x-prototxt";
+  return "";
 }
 
 wire::ContentType content_type_from_string(std::string const& str) {
   if (str == "application/x-protobuf") return wire::ContentType::PROTOBUF;
   if (str == "application/json") return wire::ContentType::JSON;
-  if (str == "application/x-prototext") return wire::ContentType::PROTOTEXT;
+  if (str == "application/x-prototxt") return wire::ContentType::PROTOTEXT;
   return wire::ContentType::NONE;
 }
 

@@ -42,7 +42,7 @@ std::string Context::service() const {
 }
 
 system_clock::duration Context::duration() const {
-  return system_clock::now() - _req->created_at();
+  return system_clock::now() - _rep->created_at();
 }
 
 bool Context::deadline_exceeded() const {

@@ -104,33 +104,33 @@ Message::Message(T const& object) : Message() {
 
 template <typename T>
 boost::optional<T> Message::unpack() const {
+  boost::optional<T> optional;
   T object;
-  switch (_content_type) {
-  case wire::ContentType::NONE:
-    // [[fallthrough]]
-  case wire::ContentType::PROTOBUF:
-    if (object.ParseFromString(_body)) return object;
-    break;
-  case wire::ContentType::JSON:
-    if (google::protobuf::util::JsonStringToMessage(_body, &object).ok()) return object;
-    break;
+  if (content_type() == wire::ContentType::NONE || content_type() == wire::ContentType::PROTOBUF) {
+    if (object.ParseFromString(_body)) optional = object;
+  } else if (content_type() == wire::ContentType::JSON) {
+    if (google::protobuf::util::JsonStringToMessage(_body, &object).ok()) optional = object;
+  } else if (content_type() == wire::ContentType::PROTOTEXT) {
+    // TODO
   }
-  return boost::none;
+  return optional;
 }
 
 template <typename T>
 Message& Message::pack(T const& object) {
-  switch (_content_type) {
-  case wire::ContentType::NONE:
+  if (content_type() == wire::ContentType::NONE) {
     // User didn't provide a valid type, default to protobuf.
     set_content_type(wire::ContentType::PROTOBUF);
-    // [[fallthrough]]
-  case wire::ContentType::PROTOBUF: object.SerializeToString(&_body); break;
-  case wire::ContentType::JSON: {
+  }
+
+  if (content_type() == wire::ContentType::PROTOBUF) {
+    object.SerializeToString(&_body);
+  } else if (content_type() == wire::ContentType::JSON) {
     google::protobuf::util::JsonPrintOptions options;
     options.always_print_primitive_fields = true;
     google::protobuf::util::MessageToJsonString(object, &_body, options);
-  }
+  } else if (content_type() == wire::ContentType::PROTOTEXT) {
+    // TODO
   }
   return *this;
 }

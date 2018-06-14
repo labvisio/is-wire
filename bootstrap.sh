@@ -40,10 +40,7 @@ if ! command -v ninja > /dev/null; then
   mv ninja /usr/bin
 fi
 
-if ! command -v conan > /dev/null; then 
-  echo "|>>| Installing conan..."; 
-  pip install conan 
-fi
+pip install conan --upgrade
 
 if ! conan remote list | grep -q "bincrafters:"; then
   echo "|>>| Adding 'bincrafters' remote"; 
@@ -54,8 +51,3 @@ if ! conan remote list | grep -q "is:"; then
   echo "|>>| Adding 'is' remote"; 
   conan remote add is https://api.bintray.com/conan/labviros/is
 fi
-
-mkdir -p build
-cd build
-# FIXME: Need to rebuild prometheus from scratch since cmake links zlib with wrong path
-conan install .. -s compiler.libcxx=libstdc++11 --build=missing --build=prometheus-cpp

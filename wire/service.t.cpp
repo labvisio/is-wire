@@ -10,7 +10,7 @@
 using namespace is::vision;
 using namespace is::wire;
 
-Status hello(is::Context* ctx, Image const& req, Image* rep) {
+Status hello(is::Context* ctx, Image const&, Image*) {
   std::this_thread::sleep_for(std::chrono::milliseconds(20));
   if (ctx->has_tracer()) { ctx->span()->SetTag("hodor", 10); }
   return is::make_status(is::wire::StatusCode::OK);

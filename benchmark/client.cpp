@@ -2,7 +2,7 @@
 #include <chrono>
 #include "is/msgs/image.pb.h"
 #include "is/msgs/utils.hpp"
-#include "is/wire/core.hpp"
+#include "../wire/core.hpp"
 
 using namespace google::protobuf;
 

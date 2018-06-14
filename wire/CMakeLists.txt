@@ -22,17 +22,18 @@ set(export_config_file ${author}-${module}Config.cmake)
 set(export_destination ${CMAKE_INSTALL_LIBDIR}/cmake/${author}-${module})
 install(FILES ${export_config_file} DESTINATION ${export_destination})
 
-
 #######
 #### Tests
 #######
 
-if(enable_tests)
+if(build_tests)
+  find_package(zipkin-cpp-opentracing)
+
   add_executable(service service.t.cpp)
-  target_link_libraries(service PUBLIC is-wire::is-wire-rpc ${CONAN_LIBS})
+  target_link_libraries(service PUBLIC is-wire::is-wire-rpc zipkin-cpp-opentracing::zipkin-cpp-opentracing)
   set_property(TARGET service PROPERTY CXX_STANDARD 11)
 
   add_executable(client client.t.cpp)
-  target_link_libraries(client PUBLIC is-wire::is-wire-core ${CONAN_LIBS})
+  target_link_libraries(client PUBLIC is-wire::is-wire-core zipkin-cpp-opentracing::zipkin-cpp-opentracing)
   set_property(TARGET client PROPERTY CXX_STANDARD 11)
-endif(enable_tests)
+endif(build_tests)

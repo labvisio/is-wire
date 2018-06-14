@@ -93,21 +93,21 @@ add_library(${target_alias} ALIAS ${target})
 ### Tests
 #####
 
-if(enable_tests)
+if(build_tests)
   enable_testing()
   find_package(GTest REQUIRED)
 
-  function(gtest_add target source)
+  function(gtest_add target source deps)
     add_executable(${target} ${source})
     set_property(TARGET ${target} PROPERTY CXX_STANDARD 11)
-    target_link_libraries(${target} GTest::GTest GTest::Main ${target_alias})
+    target_link_libraries(${target} GTest::GTest GTest::Main ${deps})
     add_test(${target} ${target}) 
   endfunction()
 
   foreach(test ${tests})
     get_filename_component(test_target ${test} NAME_WE)
-    gtest_add(${test_target}_test ${test})
+    gtest_add(${test_target}_test ${test} "${target_alias}")
   endforeach(test)
   
-endif(enable_tests)
+endif(build_tests)
 

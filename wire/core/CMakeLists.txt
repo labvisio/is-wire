@@ -1,14 +1,10 @@
 include(GNUInstallDirs)
 
 find_package(spdlog REQUIRED)
-find_package(rabbitmq-c REQUIRED)
 find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(is-msgs REQUIRED)
-# Boost dependency needs to come after is-msgs due to some weird cmake behaviour
-find_package(Boost REQUIRED COMPONENTS system chrono)
 find_package(OpenTracing REQUIRED)
-find_package(Threads)
 
 set(author "is")
 set(module "wire")
@@ -54,11 +50,7 @@ set_property(TARGET ${target} PROPERTY CXX_STANDARD 11)
 target_link_libraries(
   ${target}
  PRIVATE
-  ${SimpleAmqpClient_LIBRARIES}
-  ${rabbitmq-c_LIBRARIES}
-  Boost::chrono
-  Boost::system
-  Threads::Threads
+  SimpleAmqpClient::SimpleAmqpClient
   protobuf::libprotobuf
  PUBLIC
   OpenTracing::opentracing-static
@@ -73,9 +65,6 @@ target_include_directories(
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..> # for headers when building
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for generated files in build mode
   $<INSTALL_INTERFACE:include/${include_dir}> # for clients in install mode
- PRIVATE
-  ${SimpleAmqpClient_INCLUDE_DIRS}
-  ${rabbitmq-c_INCLUDE_DIRS}
 )
 
 set(export_targets      ${target}Targets)
@@ -114,7 +103,7 @@ add_library(${target_alias} ALIAS ${target})
 ### Tests
 #####
 
-if(enable_tests)
+if(build_tests)
   enable_testing()
   find_package(GTest REQUIRED)
 
@@ -127,7 +116,7 @@ if(enable_tests)
 
   foreach(test ${tests})
     get_filename_component(test_target ${test} NAME_WE)
-    gtest_add(${test_target}_test ${test} ${target})
+    gtest_add(${test_target}_test ${test} "${target_alias};SimpleAmqpClient::SimpleAmqpClient")
   endforeach(test)
   
-endif(enable_tests)
+endif(build_tests)

@@ -1,15 +1,15 @@
+#include "../wire/core.hpp"
+#include "../wire/rpc.hpp"
 #include "is/msgs/image.pb.h"
-#include "is/wire/core.hpp"
-#include "is/wire/rpc.hpp"
 
 using namespace is::vision;
 using namespace is::wire;
 
-Status hello(is::Context* ctx, Image const& req, Image* rep) {
+Status hello(is::Context*, Image const&, Image*) {
   return is::make_status(is::wire::StatusCode::OK);
 }
 
-Status thrower(is::Context* ctx, Image const& req, Image* rep) {
+Status thrower(is::Context*, Image const&, Image*) {
   throw std::runtime_error("big evil exception");
   return is::make_status(is::wire::StatusCode::OK);
 }
