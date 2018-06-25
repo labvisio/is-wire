@@ -14,7 +14,7 @@ class IsWireConan(ConanFile):
         "build_tests": [True, False],
         "build_benchmarks": [True, False]
     }
-    default_options = ("shared=False", "fPIC=True", "build_tests=True", "build_benchmarks=False")
+    default_options = ("shared=False", "fPIC=True", "build_tests=False", "build_benchmarks=False")
     generators = "cmake", "cmake_find_package", "cmake_paths"
     requires = ("SimpleAmqpClient/[>=2.0]@is/stable", "protobuf/[>=3.0]@bincrafters/stable",
                 "boost/[>=1.65]@conan/stable", "spdlog/[>=0.15]@bincrafters/stable",

@@ -8,7 +8,7 @@ fi
 
 if [[ $EUID == 0 ]]; then
   packages=(git build-essential wget python-pip curl python-setuptools autoconf \
-    automake libtool unzip pkg-config ca-certificates nasm)
+    automake libtool unzip pkg-config ca-certificates nasm sudo)
   if [ `apt -qq list ${packages[*]} | wc -l` !=  ${#packages[@]} ]; then
     echo "[$EUID] |>>| installing distro packages: ${packages[*]}"
     apt update
