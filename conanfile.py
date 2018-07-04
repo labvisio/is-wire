@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class IsWireConan(ConanFile):
     name = "is-wire"
-    version = "1.1.2"
+    version = "1.1.3"
     license = "MIT"
     url = "https://github.com/labviros/is-wire"
     description = "C++ implementation of the ::is messaging layer"

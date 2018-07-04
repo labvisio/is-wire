@@ -92,7 +92,34 @@ is::Message from_internal_message(boost::shared_ptr<AmqpClient::Envelope> const&
     }
 
     auto metadata_ptr = message.mutable_metadata();
-    for (auto&& header : headers) { (*metadata_ptr)[header.first] = header.second.GetString(); }
+    for (auto&& header : headers) {
+      auto type = header.second.GetType();
+      switch (type) {
+      case AmqpClient::TableValue::ValueType::VT_int8:
+      case AmqpClient::TableValue::ValueType::VT_int16:
+      case AmqpClient::TableValue::ValueType::VT_int32:
+      case AmqpClient::TableValue::ValueType::VT_int64:
+      case AmqpClient::TableValue::ValueType::VT_uint8:
+      case AmqpClient::TableValue::ValueType::VT_uint16:
+      case AmqpClient::TableValue::ValueType::VT_uint32:
+      case AmqpClient::TableValue::ValueType::VT_uint64:
+        (*metadata_ptr)[header.first] = fmt::format("{}", header.second.GetInteger());
+        break;
+      case AmqpClient::TableValue::ValueType::VT_float:
+      case AmqpClient::TableValue::ValueType::VT_double:
+        (*metadata_ptr)[header.first] = fmt::format("{}", header.second.GetReal());
+        break;
+      case AmqpClient::TableValue::ValueType::VT_string:
+        (*metadata_ptr)[header.first] = header.second.GetString();
+        break;
+      case AmqpClient::TableValue::ValueType::VT_bool:
+        (*metadata_ptr)[header.first] = fmt::format("{}", header.second.GetBool());
+        break;
+      case AmqpClient::TableValue::ValueType::VT_table: break;
+      case AmqpClient::TableValue::ValueType::VT_array: break;
+      case AmqpClient::TableValue::ValueType::VT_void: (*metadata_ptr)[header.first] = ""; break;
+      }
+    }
   }
 
   return message;
