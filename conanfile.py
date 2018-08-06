@@ -16,10 +16,15 @@ class IsWireConan(ConanFile):
     }
     default_options = ("shared=False", "fPIC=True", "build_tests=False", "build_benchmarks=False")
     generators = "cmake", "cmake_find_package", "cmake_paths"
-    requires = ("SimpleAmqpClient/[>=2.0]@is/stable", "protobuf/[>=3.0]@bincrafters/stable",
-                "boost/[>=1.65]@conan/stable", "spdlog/[>=0.15]@bincrafters/stable",
-                "opentracing-cpp/[>=1.0]@is/stable", "prometheus-cpp/[>=0.4]@is/stable",
-                "is-msgs/[>=1.1]@is/stable")
+    requires = (
+        "SimpleAmqpClient/[>=2.0]@is/stable",
+        "protobuf/[>=3.0]@bincrafters/stable",
+        "boost/[>=1.65]@conan/stable",
+        "spdlog/[>=1.0.0]@bincrafters/stable",
+        "opentracing-cpp/[>=1.0]@is/stable",
+        "prometheus-cpp/[>=0.4]@is/stable",
+        "is-msgs/[>=1.1]@is/stable",
+    )
 
     exports_sources = "*"
 
