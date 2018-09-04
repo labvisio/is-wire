@@ -1,7 +1,6 @@
 #include <benchmark/benchmark.h>
 #include <chrono>
-#include "is/msgs/image.pb.h"
-#include "is/msgs/utils.hpp"
+#include "google/protobuf/struct.pb.h"
 #include "../wire/core.hpp"
 
 using namespace google::protobuf;
@@ -10,9 +9,10 @@ static void BM_MessagingOverhead(benchmark::State& state) {
   auto channel = is::Channel{"amqp://localhost"};
   auto subscription = is::Subscription{channel};
   for (auto _ : state) {
-    auto object = is::vision::Image{};
+    auto object = google::protobuf::Struct{};
     std::string bytes(state.range(0), 'x');
-    object.set_data(bytes);
+    auto value = (*object.mutable_fields())["data"];
+    value.set_string_value(bytes);
 
     auto request = is::Message{object};
     request.set_reply_to(subscription);
@@ -32,9 +32,10 @@ static void BM_MessagingOverheadWithException(benchmark::State& state) {
   auto channel = is::Channel{"amqp://localhost"};
   auto subscription = is::Subscription{channel};
   for (auto _ : state) {
-    auto object = is::vision::Image{};
+    auto object = google::protobuf::Struct{};
     std::string bytes(state.range(0), 'x');
-    object.set_data(bytes);
+    auto value = (*object.mutable_fields())["data"];
+    value.set_string_value(bytes);
 
     auto request = is::Message{object};
     request.set_reply_to(subscription);

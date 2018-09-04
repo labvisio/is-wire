@@ -8,6 +8,9 @@ namespace is {
 Subscription::Subscription(Channel& channel, std::string const& q) {
   impl = get_impl(*this, channel);
   exchange = get_exchange(*this, channel);
+  impl->DeclareExchange(exchange, "topic", /*passive=*/false, /*durable=*/false,
+                        /*auto_delete=*/false);
+
   tag = consumer_id();
   queue = q.empty() ? tag : q;
   impl->DeclareQueue(queue, /*passive=*/false, /*durable=*/false, /*exclusive=*/false,

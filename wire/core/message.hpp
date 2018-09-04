@@ -3,10 +3,11 @@
 #include <chrono>
 #include <unordered_map>
 #include "boost/optional.hpp"
+#include "content_type.hpp"
 #include "google/protobuf/message.h"
 #include "google/protobuf/util/json_util.h"
-#include "is/msgs/wire.pb.h"
 #include "opentracing/propagation.h"
+#include "status.hpp"
 
 namespace is {
 
@@ -19,11 +20,11 @@ class Message {
   std::string _sid;
 
   std::string _body;
-  wire::ContentType _content_type;
+  ContentType _content_type;
   system_clock::time_point _created_at;
   system_clock::time_point _deadline;
 
-  wire::Status _status;
+  Status _status;
   std::string _reply_to;
   uint64_t _correlation_id;
 
@@ -58,8 +59,8 @@ class Message {
   Message& set_reply_to(Subscription const&);
 
   bool has_content_type() const;
-  wire::ContentType content_type() const;
-  Message& set_content_type(wire::ContentType);
+  ContentType content_type() const;
+  Message& set_content_type(ContentType);
 
   bool has_created_at() const;
   system_clock::time_point created_at() const;
@@ -76,9 +77,9 @@ class Message {
   Message& set_subscription_id(std::string const& subscription_id);
 
   bool has_status() const;
-  wire::Status status() const;
-  Message& set_status(wire::Status const& status);
-  Message& set_status(wire::StatusCode const&, std::string const& why = "");
+  Status status() const;
+  Message& set_status(Status const& status);
+  Message& set_status(StatusCode const&, std::string const& why = "");
 
   std::unordered_map<std::string, std::string> const& metadata() const;
   std::unordered_map<std::string, std::string>* mutable_metadata();
@@ -106,11 +107,11 @@ template <typename T>
 boost::optional<T> Message::unpack() const {
   boost::optional<T> optional;
   T object;
-  if (content_type() == wire::ContentType::NONE || content_type() == wire::ContentType::PROTOBUF) {
+  if (content_type() == ContentType::NONE || content_type() == ContentType::PROTOBUF) {
     if (object.ParseFromString(_body)) optional = object;
-  } else if (content_type() == wire::ContentType::JSON) {
+  } else if (content_type() == ContentType::JSON) {
     if (google::protobuf::util::JsonStringToMessage(_body, &object).ok()) optional = object;
-  } else if (content_type() == wire::ContentType::PROTOTEXT) {
+  } else if (content_type() == ContentType::PROTOTEXT) {
     // TODO
   }
   return optional;
@@ -118,18 +119,18 @@ boost::optional<T> Message::unpack() const {
 
 template <typename T>
 Message& Message::pack(T const& object) {
-  if (content_type() == wire::ContentType::NONE) {
+  if (content_type() == ContentType::NONE) {
     // User didn't provide a valid type, default to protobuf.
-    set_content_type(wire::ContentType::PROTOBUF);
+    set_content_type(ContentType::PROTOBUF);
   }
 
-  if (content_type() == wire::ContentType::PROTOBUF) {
+  if (content_type() == ContentType::PROTOBUF) {
     object.SerializeToString(&_body);
-  } else if (content_type() == wire::ContentType::JSON) {
+  } else if (content_type() == ContentType::JSON) {
     google::protobuf::util::JsonPrintOptions options;
     options.always_print_primitive_fields = true;
     google::protobuf::util::MessageToJsonString(object, &_body, options);
-  } else if (content_type() == wire::ContentType::PROTOTEXT) {
+  } else if (content_type() == ContentType::PROTOTEXT) {
     // TODO
   }
   return *this;

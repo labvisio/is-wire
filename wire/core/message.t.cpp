@@ -27,7 +27,7 @@ TEST(MessageTest, MemberFunctions) {
   ASSERT_TRUE(message.has_topic());
   ASSERT_EQ(message.topic(), topic);
 
-  auto ctype = is::wire::ContentType::JSON;
+  auto ctype = is::ContentType::JSON;
   ASSERT_FALSE(message.has_content_type());
   message.set_content_type(ctype);
   ASSERT_TRUE(message.has_content_type());
@@ -56,16 +56,16 @@ TEST(MessageTest, MemberFunctions) {
   ASSERT_TRUE(message.has_body());
 
   ASSERT_FALSE(message.has_status());
-  message.set_status(is::wire::StatusCode::ALREADY_EXISTS, "hello");
-  ASSERT_EQ(message.status().code(), is::wire::StatusCode::ALREADY_EXISTS);
+  message.set_status(is::StatusCode::ALREADY_EXISTS, "hello");
+  ASSERT_EQ(message.status().code(), is::StatusCode::ALREADY_EXISTS);
   ASSERT_EQ(message.status().why(), "hello");
   ASSERT_TRUE(message.has_status());
 
-  is::wire::Status status;
-  status.set_code(is::wire::StatusCode::OK);
+  is::Status status;
+  status.set_code(is::StatusCode::OK);
   status.set_why("roger that");
   message.set_status(status);
-  ASSERT_EQ(message.status().code(), is::wire::StatusCode::OK);
+  ASSERT_EQ(message.status().code(), is::StatusCode::OK);
   ASSERT_EQ(message.status().why(), "roger that");
 
   message.set_subscription_id("mysid");

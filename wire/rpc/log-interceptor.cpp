@@ -10,15 +10,17 @@ void LogInterceptor::before_call(Context*) {}
 
 void LogInterceptor::after_call(Context* ctx) {
   auto service = ctx->service();
-  auto took = duration_cast<milliseconds>(ctx->duration());
+  auto took = duration_cast<milliseconds>(ctx->duration()).count();
   auto code = ctx->status().code();
-  auto status = wire::StatusCode_Name(code);
+  auto status = StatusCode_Name(code);
   auto why = ctx->status().why();
 
   switch (code) {
-  case wire::StatusCode::OK: info("{};{};{}", service, took, status); break;
-  case wire::StatusCode::INTERNAL_ERROR: error("{};{};{};'{}'", service, took, status, why); break;
-  default: warn("{};{};{};'{}'", service, took, status, why);
+  case StatusCode::OK: is::info("service={} took={}ms code={}", service, took, status); break;
+  case StatusCode::INTERNAL_ERROR:
+    error("service={} took={}ms code={} why='{}'", service, took, status, why);
+    break;
+  default: warn("service={} took={}ms code={} why='{}'", service, took, status, why);
   }
 }
 

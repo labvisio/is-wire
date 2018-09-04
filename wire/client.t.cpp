@@ -1,8 +1,6 @@
 #include <chrono>
 #include "core.hpp"
-#include "is/msgs/image.pb.h"
-#include "is/msgs/utils.hpp"
-
+#include "google/protobuf/struct.pb.h"
 #include "zipkin/opentracing.h"
 
 int main(int, char**) {
@@ -18,7 +16,7 @@ int main(int, char**) {
   for (int i = 0; i < 20; ++i) {
     auto span = tracer->StartSpan("req");
 
-    auto object = is::vision::Image{};
+    auto object = google::protobuf::Struct{};
     auto request = is::Message{object};
     request.set_reply_to(subscription)
         .set_deadline(milliseconds(25))
@@ -27,9 +25,8 @@ int main(int, char**) {
     channel.publish("hodor.hello", request);
 
     auto reply = channel.consume_until(request.deadline());
-    if (reply) {
-      assert(request.correlation_id() == reply.correlation_id() &&
-             reply.status().code() == is::wire::StatusCode::OK);
+    if (reply && reply->status().ok()) {
+      if (request.correlation_id() == reply->correlation_id()) { is::info("{}", i); }
     } else {
       is::warn("deadline exceeded");
     }

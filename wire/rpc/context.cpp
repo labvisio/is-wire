@@ -49,7 +49,7 @@ bool Context::deadline_exceeded() const {
   return _req->deadline_exceeded();
 }
 
-wire::Status Context::status() const {
+Status Context::status() const {
   return _rep->status();
 }
 

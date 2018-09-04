@@ -15,9 +15,9 @@ TEST(AmqpTest, PackUnpackEquality) {
       .set_correlation_id(cid)
       .set_reply_to("reply")
       .set_body("body")
-      .set_content_type(is::wire::ContentType::PROTOBUF)
+      .set_content_type(is::ContentType::PROTOBUF)
       .set_created_at(now)
-      .set_status(is::wire::StatusCode::OK, "ok then")
+      .set_status(is::StatusCode::OK, "ok then")
       .set_deadline(now + milliseconds(6788));
 
   auto metadata = msg.mutable_metadata();
@@ -42,9 +42,9 @@ TEST(AmqpTest, PackUnpackEquality) {
   ASSERT_EQ(msg2.reply_to(), "reply");
   ASSERT_EQ(msg2.body(), msg.body());
   ASSERT_EQ(msg2.correlation_id(), cid);
-  ASSERT_EQ(msg2.content_type(), is::wire::ContentType::PROTOBUF);
+  ASSERT_EQ(msg2.content_type(), is::ContentType::PROTOBUF);
   ASSERT_EQ(msg2.created_at(), now);
-  ASSERT_EQ(msg2.status().code(), is::wire::StatusCode::OK);
+  ASSERT_EQ(msg2.status().code(), is::StatusCode::OK);
   ASSERT_EQ(msg2.status().why(), "ok then");
   ASSERT_EQ(msg2.deadline(), now + milliseconds(6788));
   ASSERT_EQ(msg2.metadata(), msg.metadata());
@@ -63,7 +63,7 @@ TEST(AmqpTest, PackUnpackEquality) {
 TEST(AmqpTest, ContentTypes) {
   for (int i = 0; i < is::wire::ContentType_ARRAYSIZE; ++i) {
     auto msg = is::Message{};
-    msg.set_content_type((is::wire::ContentType)i);
+    msg.set_content_type(static_cast<is::ContentType>(i));
     auto msg2 = is::from_internal_message(
         AmqpClient::Envelope::Create(is::to_internal_message(msg), "", 0, "", false, "", 0));
     ASSERT_EQ(msg.content_type(), msg2.content_type());

@@ -17,7 +17,7 @@ Message::Message()
     : _topic(),
       _sid(),
       _body(),
-      _content_type(wire::ContentType::NONE),
+      _content_type(ContentType::NONE),
       _created_at(system_clock::now()),
       _deadline(),
       _status(),
@@ -104,14 +104,14 @@ Message& Message::set_reply_to(Subscription const& subscription) {
 // Content Type
 
 bool Message::has_content_type() const {
-  return _content_type != wire::ContentType::NONE;
+  return _content_type != ContentType::NONE;
 }
 
-wire::ContentType Message::content_type() const {
+ContentType Message::content_type() const {
   return _content_type;
 }
 
-Message& Message::set_content_type(wire::ContentType type) {
+Message& Message::set_content_type(ContentType type) {
   _content_type = type;
   return *this;
 }
@@ -169,19 +169,19 @@ Message& Message::set_subscription_id(std::string const& sid) {
 // Status
 
 bool Message::has_status() const {
-  return !(_status.code() == wire::StatusCode::UNKNOWN && _status.why().empty());
+  return !(_status.code() == StatusCode::UNKNOWN && _status.why().empty());
 }
 
-wire::Status Message::status() const {
+Status Message::status() const {
   return _status;
 }
 
-Message& Message::set_status(wire::Status const& status) {
+Message& Message::set_status(Status const& status) {
   _status = status;
   return *this;
 }
 
-Message& Message::set_status(wire::StatusCode const& code, std::string const& why) {
+Message& Message::set_status(StatusCode const& code, std::string const& why) {
   _status.set_code(code);
   _status.set_why(why);
   return *this;

@@ -32,7 +32,7 @@ class Context {
   std::string service() const;
   bool deadline_exceeded() const;
   system_clock::duration duration() const;
-  wire::Status status() const;
+  Status status() const;
 };
 
 }  // namespace is

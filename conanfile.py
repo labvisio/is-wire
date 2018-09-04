@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class IsWireConan(ConanFile):
     name = "is-wire"
-    version = "1.1.3"
+    version = "1.1.4"
     license = "MIT"
     url = "https://github.com/labviros/is-wire"
     description = "C++ implementation of the ::is messaging layer"
@@ -14,16 +14,16 @@ class IsWireConan(ConanFile):
         "build_tests": [True, False],
         "build_benchmarks": [True, False]
     }
-    default_options = ("shared=False", "fPIC=True", "build_tests=False", "build_benchmarks=False")
+    default_options = ("shared=False", "fPIC=True",
+                       "build_tests=False", "build_benchmarks=False")
     generators = "cmake", "cmake_find_package", "cmake_paths"
     requires = (
         "SimpleAmqpClient/[>=2.0]@is/stable",
-        "protobuf/[>=3.0]@bincrafters/stable",
+        "protobuf/3.6.1@bincrafters/stable",
         "boost/[>=1.65]@conan/stable",
-        "spdlog/[>=1.0.0]@bincrafters/stable",
+        "spdlog/[>=1.1.0]@bincrafters/stable",
         "opentracing-cpp/[>=1.0]@is/stable",
         "prometheus-cpp/[>=0.4]@is/stable",
-        "is-msgs/[>=1.1]@is/stable",
     )
 
     exports_sources = "*"
@@ -36,7 +36,6 @@ class IsWireConan(ConanFile):
             self.build_requires("zipkin-cpp-opentracing/0.3.1@is/stable")
 
     def configure(self):
-        self.options["spdlog"].fmt_external = False
         if self.options.shared:
             self.options["boost"].fPIC = True
 

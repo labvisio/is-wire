@@ -1,7 +1,6 @@
 
 include(GNUInstallDirs)
 
-find_package(is-msgs REQUIRED)
 find_package(prometheus-cpp REQUIRED)
 
 set(author "is")
@@ -44,7 +43,6 @@ target_link_libraries(
   ${target}
  PUBLIC
   is-wire::is-wire-core
-  is-msgs::is-msgs
   prometheus-cpp::prometheus-cpp
 )
 

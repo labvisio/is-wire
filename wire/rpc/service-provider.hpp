@@ -9,8 +9,6 @@
 #include "../core/subscription.hpp"
 #include "context.hpp"
 #include "interceptor.hpp"
-#include "is/msgs/utils.hpp"
-#include "is/msgs/wire.pb.h"
 
 namespace is {
 
@@ -32,7 +30,7 @@ class ServiceProvider {
   // function will be called
   template <typename Request, typename Reply>
   void delegate(std::string const& service,
-                std::function<wire::Status(Context*, Request, Reply*)> const& handler);
+                std::function<Status(Context*, Request, Reply*)> const& handler);
 
   // Attempts to serve message, returning false on failure.
   bool serve(Message const& request) const;
@@ -44,7 +42,7 @@ class ServiceProvider {
 template <typename Request, typename Reply>
 void ServiceProvider::delegate(
     std::string const& service,
-    std::function<wire::Status(Context*, Request, Reply*)> const& service_impl) {
+    std::function<Status(Context*, Request, Reply*)> const& service_impl) {
   Subscription subscription{channel, service};
   services[subscription.id()] = [=](Context* ctx, Message const& in, Message* out) {
     auto request = in.unpack<Request>();
@@ -55,15 +53,15 @@ void ServiceProvider::delegate(
         out->pack(reply);
       } catch (std::exception const& e) {
         out->set_status(
-            wire::StatusCode::INTERNAL_ERROR,
+            StatusCode::INTERNAL_ERROR,
             fmt::format("Service '{}' throwed an exception\n: '{}'", service, e.what()));
       } catch (...) {
-        out->set_status(wire::StatusCode::INTERNAL_ERROR,
+        out->set_status(StatusCode::INTERNAL_ERROR,
                         fmt::format("Service '{}' throwed unkown exception of type '{}'", service,
                                     typeid(std::current_exception()).name()));
       }
     } else {
-      out->set_status(wire::StatusCode::FAILED_PRECONDITION,
+      out->set_status(StatusCode::FAILED_PRECONDITION,
                       fmt::format("Expected request type '{}' but received something else",
                                   Request{}.GetMetadata().descriptor->full_name()));
     }
