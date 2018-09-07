@@ -1,6 +1,7 @@
 include(GNUInstallDirs)
 
 find_package(spdlog REQUIRED)
+find_package(Boost REQUIRED)
 find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(OpenTracing REQUIRED)
@@ -8,6 +9,8 @@ find_package(OpenTracing REQUIRED)
 set(author "is")
 set(module "wire")
 set(submodule "core")
+
+PROTOBUF_GENERATE_CPP(wire_src wire_hdr wire.proto)
 
 list(APPEND interfaces
   "message.hpp"
@@ -17,9 +20,8 @@ list(APPEND interfaces
   "logger.hpp"
   "content_type.hpp"
   "status.hpp"
+  ${wire_hdr}
 )
-
-PROTOBUF_GENERATE_CPP(wire_src wire_hdr wire.proto)
 
 list(APPEND sources 
   "message.cpp"
@@ -31,7 +33,6 @@ list(APPEND sources
   "internal/amqp.cpp"
   "internal/amqp.hpp"
   ${wire_src}
-  ${wire_hdr}
   ${interfaces}
 )
 
@@ -58,6 +59,7 @@ target_link_libraries(
  PRIVATE
   SimpleAmqpClient::SimpleAmqpClient
  PUBLIC
+  Boost::boost
   protobuf::libprotobuf
   OpenTracing::opentracing-static
   spdlog::spdlog

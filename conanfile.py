@@ -14,16 +14,15 @@ class IsWireConan(ConanFile):
         "build_tests": [True, False],
         "build_benchmarks": [True, False]
     }
-    default_options = ("shared=False", "fPIC=True",
-                       "build_tests=False", "build_benchmarks=False")
+    default_options = ("shared=False", "fPIC=True", "build_tests=False", "build_benchmarks=False")
     generators = "cmake", "cmake_find_package", "cmake_paths"
     requires = (
         "SimpleAmqpClient/[>=2.0]@is/stable",
-        "protobuf/3.6.1@bincrafters/stable",
-        "boost/[>=1.65]@conan/stable",
         "spdlog/[>=1.1.0]@bincrafters/stable",
         "opentracing-cpp/[>=1.0]@is/stable",
         "prometheus-cpp/[>=0.4]@is/stable",
+        "protobuf/3.6.1@bincrafters/stable",
+        "boost/[>=1.65]@conan/stable",
     )
 
     exports_sources = "*"
@@ -37,6 +36,10 @@ class IsWireConan(ConanFile):
 
     def configure(self):
         if self.options.shared:
+            self.options["SimpleAmqpClient"].fPIC = True
+            self.options["opentracing-cpp"].fPIC = True
+            self.options["prometheus-cpp"].fPIC = True
+            self.options["protobuf"].fPIC = True
             self.options["boost"].fPIC = True
 
     def build(self):
