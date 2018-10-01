@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iomanip>
 #include <limits>
+#include <random>
 #include "boost/asio.hpp"
 #include "spdlog/fmt/fmt.h"
 
