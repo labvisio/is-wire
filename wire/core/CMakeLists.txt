@@ -4,7 +4,7 @@ find_package(spdlog REQUIRED)
 find_package(Boost REQUIRED)
 find_package(SimpleAmqpClient REQUIRED)
 find_package(Protobuf REQUIRED)
-find_package(OpenTracing REQUIRED)
+find_package(opentracing-cpp REQUIRED)
 
 set(author "is")
 set(module "wire")
@@ -61,7 +61,7 @@ target_link_libraries(
  PUBLIC
   Boost::boost
   protobuf::libprotobuf
-  OpenTracing::opentracing-static
+  opentracing-cpp::opentracing-cpp
   spdlog::spdlog
 )
 
