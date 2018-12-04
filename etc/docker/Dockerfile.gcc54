@@ -1,0 +1,8 @@
+FROM ubuntu:16.04
+
+ADD . /is-wire
+
+RUN cd /is-wire                                                             \
+ && bash bootstrap.sh                                                       \  
+ && conan create . is/stable -s compiler.libcxx=libstdc++11 --build=missing \
+ && rm -rf /is-wire
