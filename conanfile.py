@@ -35,12 +35,11 @@ class IsWireConan(ConanFile):
             self.build_requires("zipkin-cpp-opentracing/0.3.1@is/stable")
 
     def configure(self):
-        if self.options.shared:
-            self.options["SimpleAmqpClient"].shared = True
-            self.options["opentracing-cpp"].shared = True
-            self.options["prometheus-cpp"].shared = True
-            self.options["protobuf"].shared = True
-            self.options["boost"].shared = True
+        self.options["SimpleAmqpClient"].shared = self.options.shared 
+        self.options["opentracing-cpp"].shared = self.options.shared 
+        self.options["prometheus-cpp"].shared = self.options.shared 
+        self.options["protobuf"].shared = self.options.shared 
+        self.options["boost"].shared = self.options.shared 
 
     def build(self):
         cmake = CMake(self, generator='Ninja')
