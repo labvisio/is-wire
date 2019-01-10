@@ -22,6 +22,7 @@ class IsWireConan(ConanFile):
         "opentracing-cpp/1.4.0@is/stable",
         "prometheus-cpp/0.4.1@is/stable",
         "protobuf/3.6.1@bincrafters/stable",
+        "protoc_installer/3.6.1@bincrafters/stable",
         "boost/1.66.0@conan/stable",
     )
 
