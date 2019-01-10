@@ -56,9 +56,8 @@ set_property(TARGET ${target} PROPERTY CXX_STANDARD 11)
 # link dependencies
 target_link_libraries(
   ${target}
- PRIVATE
-  SimpleAmqpClient::SimpleAmqpClient
  PUBLIC
+  SimpleAmqpClient::SimpleAmqpClient
   Boost::boost
   protobuf::libprotobuf
   opentracing-cpp::opentracing-cpp

@@ -36,6 +36,7 @@ class Message {
   Message(T const& object);
   Message(Message const&) = default;
   Message(Message&&) = default;
+  Message& operator=(Message const&) = default;
 
   friend bool operator==(Message const& lhs, Message const& rhs);
   friend bool operator!=(Message const& lhs, Message const& rhs);

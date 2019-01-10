@@ -51,4 +51,15 @@ boost::optional<Message> Channel::consume_until(system_clock::time_point const& 
   return consume_for(time_point - system_clock::now());
 }
 
+std::vector<Message> Channel::consume_ready() const {
+  std::vector<is::Message> messages;
+  for (;;) {
+    auto maybe_msg = consume_for(milliseconds(0));
+    if (maybe_msg)
+      messages.push_back(maybe_msg.get());
+    else
+      return messages;
+  }
+}
+
 }  // namespace is

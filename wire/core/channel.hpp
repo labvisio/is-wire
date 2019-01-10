@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 #include "boost/optional.hpp"
 #include "boost/shared_ptr.hpp"
 #include "opentracing/tracer.h"
@@ -39,6 +40,7 @@ class Channel {
   Message consume() const;
   boost::optional<Message> consume_for(system_clock::duration const& duration) const;
   boost::optional<Message> consume_until(system_clock::time_point const& time_point) const;
+  std::vector<Message> consume_ready() const;
 };
 
 }  // namespace is
