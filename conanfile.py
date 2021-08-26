@@ -21,18 +21,23 @@ class IsWireConan(ConanFile):
         "spdlog/1.1.0@bincrafters/stable",
         "opentracing-cpp/1.4.0@is/stable",
         "prometheus-cpp/0.4.1@is/stable",
-        "protobuf/3.6.1@bincrafters/stable",
-        "protoc_installer/3.6.1@bincrafters/stable",
-        "boost/1.66.0@conan/stable",
+        "protobuf/3.9.1",
+        "boost/1.69.0",
+        "zlib/1.2.11@conan/stable",
     )
 
-    exports_sources = "*"
+    def source(self):
+        self.run("git clone https://github.com/labviros/is-wire")
+        self.run("cd is-wire && git checkout add_communication_tracing")
+        tools.replace_in_file(
+            "is-wire/wire/core/CMakeLists.txt", "PROTOBUF_GENERATE_CPP(wire_src wire_hdr wire.proto)",
+            '''protobuf_generate_cpp(wire_src wire_hdr wire.proto)''')
 
     def build_requirements(self):
         if self.options.build_benchmarks:
             self.build_requires("benchmark/1.4.1@is/stable")
         if self.options.build_tests:
-            self.build_requires("gtest/[>=1.8]@bincrafters/stable")
+            self.build_requires("gtest/1.8.0@bincrafters/stable")
             self.build_requires("zipkin-cpp-opentracing/0.3.1@is/stable")
 
     def configure(self):
@@ -43,12 +48,12 @@ class IsWireConan(ConanFile):
         self.options["boost"].shared = self.options.shared 
 
     def build(self):
-        cmake = CMake(self, generator='Ninja')
+        cmake = CMake(self)
         if not self.options.shared:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
         cmake.definitions["build_tests"] = self.options.build_tests
         cmake.definitions["build_benchmarks"] = self.options.build_benchmarks
-        cmake.configure()
+        cmake.configure(source_folder="is-wire")
         cmake.build()
         if self.options.build_tests:
             cmake.test()
