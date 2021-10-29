@@ -210,7 +210,7 @@ boost::optional<Message> Channel::consume_for(system_clock::duration const& dura
   return boost::none;
 }
 
-boost::optional<Message> Channel::consume_until(system_clock::time_point const& time_point,std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port)) const {
+boost::optional<Message> Channel::consume_until(system_clock::time_point const& time_point,std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port) const {
   if((!(commtrace_exporter_ip.empty())) && (commtrace_exporter_port != 0)){
     return consume_for(time_point - system_clock::now(),commtrace_exporter_ip,commtrace_exporter_port);
   }
@@ -219,7 +219,7 @@ boost::optional<Message> Channel::consume_until(system_clock::time_point const& 
   }
 }
 
-std::vector<Message> Channel::consume_ready(std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port)) const {
+std::vector<Message> Channel::consume_ready(std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port) const {
   std::vector<is::Message> messages;
   for (;;) {
     auto maybe_msg = consume_for(milliseconds(0),commtrace_exporter_ip,commtrace_exporter_port);
