@@ -39,8 +39,8 @@ class Channel {
 
   Message consume(std::string const& commtrace_exporter_ip = std::string(), std::uint16_t const& commtrace_exporter_port = 0) const;
   boost::optional<Message> consume_for(system_clock::duration const& duration,std::string const& commtrace_exporter_ip = std::string(), std::uint16_t const& commtrace_exporter_port = 0) const;
-  boost::optional<Message> consume_until(system_clock::time_point const& time_point) const;
-  std::vector<Message> consume_ready() const;
+  boost::optional<Message> consume_until(system_clock::time_point const& time_point,std::string const& commtrace_exporter_ip = std::string(), std::uint16_t const& commtrace_exporter_port = 0) const;
+  std::vector<Message> consume_ready(std::string const& commtrace_exporter_ip = std::string(), std::uint16_t const& commtrace_exporter_port = 0) const;
 };
 
 }  // namespace is
