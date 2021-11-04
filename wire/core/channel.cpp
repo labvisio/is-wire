@@ -113,7 +113,10 @@ void create_tracer(boost::shared_ptr<AmqpClient::Envelope> message, std::string 
     data += in_consumer_tag;
 
     data += "\", \"timestamp_send\": \"";
+    auto aux = msgHeaders.find("timestamp_send");
+    if (aux != msgHeaders.end()) {
     data += std::to_string(msgHeaders.find("timestamp_send")->second.GetUint64());
+    }
 
     data += "\", \"timestamp_rcvd\": \"";
     data += std::to_string(timestamp_rcvd);
