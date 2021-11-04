@@ -122,7 +122,7 @@ void create_tracer(boost::shared_ptr<AmqpClient::Envelope> message, std::string 
     data += std::to_string(timestamp_rcvd);
 
     data += "\", \"x-b3-flags\": \"";
-    auto aux = msgHeaders.find("x-b3-flags");
+    aux = msgHeaders.find("x-b3-flags");
     if (aux != msgHeaders.end()) {
       data += aux->second.GetString();
     }
