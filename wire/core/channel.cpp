@@ -177,7 +177,11 @@ void create_tracer(boost::shared_ptr<AmqpClient::Envelope> message, std::string 
     while (std::getline(split, token, split_char)) {
       size_t pos = token.find(':');
       ctxt_field.name = token.substr(0, pos);
-      ctxt_field.value = token.substr(pos + 1);
+      auto str = token.substr(pos + 1);
+      str.erase(std::remove_if(str.begin(), str.end(),
+      [](char c) { return std::isspace(c) || (!std::isalpha(c) && !std::isdigit(c)); } ),
+      str.end());
+      ctxt_field.value = str;
       ctxt_fields.push_back(ctxt_field);
     }
     msgHeaders.clear();
