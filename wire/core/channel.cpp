@@ -113,13 +113,16 @@ void create_tracer(boost::shared_ptr<AmqpClient::Envelope> message, std::string 
     data += in_consumer_tag;
 
     data += "\", \"timestamp_send\": \"";
+    auto aux = msgHeaders.find("timestamp_send");
+    if (aux != msgHeaders.end()) {
     data += std::to_string(msgHeaders.find("timestamp_send")->second.GetUint64());
+    }
 
     data += "\", \"timestamp_rcvd\": \"";
     data += std::to_string(timestamp_rcvd);
 
     data += "\", \"x-b3-flags\": \"";
-    auto aux = msgHeaders.find("x-b3-flags");
+    aux = msgHeaders.find("x-b3-flags");
     if (aux != msgHeaders.end()) {
       data += aux->second.GetString();
     }
@@ -174,7 +177,11 @@ void create_tracer(boost::shared_ptr<AmqpClient::Envelope> message, std::string 
     while (std::getline(split, token, split_char)) {
       size_t pos = token.find(':');
       ctxt_field.name = token.substr(0, pos);
-      ctxt_field.value = token.substr(pos + 1);
+      auto str = token.substr(pos + 1);
+      str.erase(std::remove_if(str.begin(), str.end(),
+      [](char c) { return std::isspace(c) || (!std::isalpha(c) && !std::isdigit(c)); } ),
+      str.end());
+      ctxt_field.value = str;
       ctxt_fields.push_back(ctxt_field);
     }
     msgHeaders.clear();
@@ -210,14 +217,19 @@ boost::optional<Message> Channel::consume_for(system_clock::duration const& dura
   return boost::none;
 }
 
-boost::optional<Message> Channel::consume_until(system_clock::time_point const& time_point) const {
-  return consume_for(time_point - system_clock::now());
+boost::optional<Message> Channel::consume_until(system_clock::time_point const& time_point,std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port) const {
+  if((!(commtrace_exporter_ip.empty())) && (commtrace_exporter_port != 0)){
+    return consume_for(time_point - system_clock::now(),commtrace_exporter_ip,commtrace_exporter_port);
+  }
+  else{
+    return consume_for(time_point - system_clock::now());
+  }
 }
 
-std::vector<Message> Channel::consume_ready() const {
+std::vector<Message> Channel::consume_ready(std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port) const {
   std::vector<is::Message> messages;
   for (;;) {
-    auto maybe_msg = consume_for(milliseconds(0));
+    auto maybe_msg = consume_for(milliseconds(0),commtrace_exporter_ip,commtrace_exporter_port);
     if (maybe_msg)
       messages.push_back(maybe_msg.get());
     else

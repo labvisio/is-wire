@@ -34,8 +34,13 @@ bool ServiceProvider::serve(Message const& req) const {
   return found;
 }
 
-void ServiceProvider::run() const {
+void ServiceProvider::run(std::string const& commtrace_exporter_ip, std::uint16_t const& commtrace_exporter_port) const {
+  if((!(commtrace_exporter_ip.empty())) && (commtrace_exporter_port != 0)){
+  for (;;) { serve(channel.consume(commtrace_exporter_ip,commtrace_exporter_port)); }
+  }
+  else{
   for (;;) { serve(channel.consume()); }
+  }
 }
 
 }  // namespace is

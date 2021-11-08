@@ -36,7 +36,7 @@ class ServiceProvider {
   bool serve(Message const& request) const;
 
   // Blocks the current thread listening for requests
-  void run() const;
+  void run(std::string const& commtrace_exporter_ip = std::string(), std::uint16_t const& commtrace_exporter_port = 0) const;
 };
 
 template <typename Request, typename Reply>
