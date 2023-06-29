@@ -9,7 +9,7 @@ class IsWireConan(ConanFile):
     name = "is-wire"
     version = "1.1.5"
     license = "MIT"
-    url = "https://github.com/labviros/is-wire"
+    url = "https://github.com/labvisio/is-wire"
     description = "C++ implementation of the ::is messaging layer"
     settings = "os", "compiler", "build_type", "arch"
     options = {
