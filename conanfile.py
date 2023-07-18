@@ -81,10 +81,10 @@ class IsWireConan(ConanFile):
         self.cpp_info.components["is-wire"].libs = ["is-wire-core", "is-wire-rpc"]
         self.cpp_info.components["is-wire"].requires =[
             "opentracing-cpp::opentracing-cpp",
-            "simpleamqpclient::SimpleAmqpClient",
+            "simpleamqpclient::simpleamqpclient",
             "prometheus-cpp::prometheus-cpp",
             "spdlog::spdlog",
-            "protobuf::libprotobuf",
+            "protobuf::protobuf",
             "boost::boost",
         ]
         if self.options.build_tests:
