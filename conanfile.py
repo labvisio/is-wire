@@ -28,25 +28,25 @@ class IsWireConan(ConanFile):
     exports_sources = "*"
 
     def requirements(self):
-        self.requires("boost/1.80.0", force=True)
+        self.requires("boost/1.80.0")
         self.requires("spdlog/1.11.0")
         self.requires("protobuf/3.20.0")
         self.requires("prometheus-cpp/0.4.1@is/stable")
         self.requires("opentracing-cpp/1.4.0@is/stable")
         self.requires("simpleamqpclient/2.5.0@is/stable")
-
-    def build_requirements(self):
-        self.tool_requires("protobuf/3.20.0")
         if self.options.build_benchmarks:
             self.requires("benchmark/1.4.1@is/stable")
         if self.options.build_tests:
             self.requires("gtest/1.10.0")
             self.requires("zipkin-cpp-opentracing/0.3.1@is/stable")
 
+    def build_requirements(self):
+        self.tool_requires("protobuf/3.20.0")
+
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
-        self.options["SimpleAmqpClient"].shared = self.options.shared
+        self.options["simpleamqpclient"].shared = self.options.shared
         self.options["opentracing-cpp"].shared = self.options.shared 
         self.options["prometheus-cpp"].shared = self.options.shared 
         self.options["protobuf"].shared = self.options.shared 
@@ -81,7 +81,7 @@ class IsWireConan(ConanFile):
         self.cpp_info.components["is-wire"].libs = ["is-wire-core", "is-wire-rpc"]
         self.cpp_info.components["is-wire"].requires =[
             "opentracing-cpp::opentracing-cpp",
-            "SimpleAmqpClient::SimpleAmqpClient",
+            "simpleamqpclient::SimpleAmqpClient",
             "prometheus-cpp::prometheus-cpp",
             "spdlog::spdlog",
             "protobuf::libprotobuf",
