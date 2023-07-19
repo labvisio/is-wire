@@ -28,11 +28,11 @@ class IsWireConan(ConanFile):
     exports_sources = "*"
 
     def requirements(self):
-        self.requires("boost/1.80.0")
-        self.requires("spdlog/1.11.0")
-        self.requires("protobuf/3.20.0")
-        self.requires("prometheus-cpp/0.4.1@is/stable")
-        self.requires("opentracing-cpp/1.4.0@is/stable")
+        self.requires("boost/1.80.0", transitive_headers=True, transitive_libs=True)
+        self.requires("spdlog/1.8.5", transitive_headers=True, transitive_libs=True)
+        self.requires("protobuf/3.20.0", transitive_headers=True, transitive_libs=True)
+        self.requires("prometheus-cpp/0.4.1@is/stable", transitive_headers=True, transitive_libs=True)
+        self.requires("opentracing-cpp/1.4.0@is/stable", transitive_headers=True, transitive_libs=True)
         self.requires("simpleamqpclient/2.5.0@is/stable")
         if self.options.build_benchmarks:
             self.requires("benchmark/1.4.1@is/stable")
